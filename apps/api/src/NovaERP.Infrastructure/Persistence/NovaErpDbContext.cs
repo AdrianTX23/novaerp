@@ -5,6 +5,7 @@ using NovaERP.Domain.Catalog;
 using NovaERP.Domain.Common;
 using NovaERP.Domain.Identity;
 using NovaERP.Domain.Partners;
+using NovaERP.Domain.Sales;
 
 namespace NovaERP.Infrastructure.Persistence;
 
@@ -34,6 +35,8 @@ public sealed class NovaErpDbContext(
     public DbSet<ProductCategory> ProductCategories => Set<ProductCategory>();
     public DbSet<Product> Products => Set<Product>();
     public DbSet<Partner> Partners => Set<Partner>();
+    public DbSet<SalesOrder> SalesOrders => Set<SalesOrder>();
+    public DbSet<SalesOrderLine> SalesOrderLines => Set<SalesOrderLine>();
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {

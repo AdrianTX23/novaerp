@@ -2,6 +2,7 @@ using Microsoft.EntityFrameworkCore;
 using NovaERP.Domain.Catalog;
 using NovaERP.Domain.Identity;
 using NovaERP.Domain.Partners;
+using NovaERP.Domain.Sales;
 
 namespace NovaERP.Application.Common.Interfaces;
 
@@ -22,6 +23,8 @@ public interface IApplicationDbContext
     DbSet<ProductCategory> ProductCategories { get; }
     DbSet<Product> Products { get; }
     DbSet<Partner> Partners { get; }
+    DbSet<SalesOrder> SalesOrders { get; }
+    DbSet<SalesOrderLine> SalesOrderLines { get; }
 
     Task<int> SaveChangesAsync(CancellationToken cancellationToken = default);
 }

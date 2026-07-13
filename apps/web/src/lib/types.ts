@@ -88,3 +88,38 @@ export interface PartnerDto {
   address: string | null;
   isActive: boolean;
 }
+
+/** Coincide con SalesOrderStatus del backend (string). */
+export type SalesOrderStatus = "Draft" | "Confirmed" | "Cancelled";
+
+export interface SalesOrderSummary {
+  id: string;
+  orderNumber: string;
+  customerId: string;
+  customerName: string;
+  status: SalesOrderStatus;
+  orderDate: string;
+  totalAmount: number;
+  lineCount: number;
+}
+
+export interface SalesOrderLineDto {
+  productId: string;
+  productSku: string;
+  productName: string;
+  quantity: number;
+  unitPrice: number;
+  lineTotal: number;
+}
+
+export interface SalesOrderDetail {
+  id: string;
+  orderNumber: string;
+  customerId: string;
+  customerName: string;
+  status: SalesOrderStatus;
+  orderDate: string;
+  notes: string | null;
+  totalAmount: number;
+  lines: SalesOrderLineDto[];
+}
