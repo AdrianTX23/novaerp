@@ -7,6 +7,29 @@ export interface AuthUser {
   permissions: string[];
 }
 
+export interface MonthlyPoint {
+  month: string;
+  total: number;
+}
+
+export interface TopProductDto {
+  productName: string;
+  quantitySold: number;
+  revenue: number;
+}
+
+export interface DashboardDto {
+  salesThisMonth: number;
+  salesOrdersThisMonth: number;
+  purchasesThisMonth: number;
+  lowStockCount: number;
+  inventoryValue: number;
+  topCustomerName: string | null;
+  topCustomerRevenue: number;
+  salesTrend: MonthlyPoint[];
+  topProducts: TopProductDto[];
+}
+
 export interface AuthResponse {
   accessToken: string;
   accessTokenExpiresAt: string;
