@@ -1,8 +1,10 @@
 using System.Reflection;
 using Microsoft.EntityFrameworkCore;
 using NovaERP.Application.Common.Interfaces;
+using NovaERP.Domain.Catalog;
 using NovaERP.Domain.Common;
 using NovaERP.Domain.Identity;
+using NovaERP.Domain.Partners;
 
 namespace NovaERP.Infrastructure.Persistence;
 
@@ -29,6 +31,9 @@ public sealed class NovaErpDbContext(
     public DbSet<RefreshToken> RefreshTokens => Set<RefreshToken>();
     public DbSet<UserRole> UserRoles => Set<UserRole>();
     public DbSet<RolePermission> RolePermissions => Set<RolePermission>();
+    public DbSet<ProductCategory> ProductCategories => Set<ProductCategory>();
+    public DbSet<Product> Products => Set<Product>();
+    public DbSet<Partner> Partners => Set<Partner>();
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {

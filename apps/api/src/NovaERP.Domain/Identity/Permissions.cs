@@ -18,6 +18,10 @@ public static class Permissions
     public const string InventoryRead = "inventory.read";
     public const string InventoryManage = "inventory.manage";
 
+    // Contactos (clientes y proveedores)
+    public const string PartnersRead = "partners.read";
+    public const string PartnersManage = "partners.manage";
+
     // Ventas
     public const string SalesRead = "sales.read";
     public const string SalesManage = "sales.manage";
@@ -36,6 +40,8 @@ public static class Permissions
         new(new Guid("a0000000-0000-0000-0000-000000000003"), RolesManage, "Gestionar roles y permisos", "Usuarios"),
         new(new Guid("a0000000-0000-0000-0000-000000000010"), InventoryRead, "Ver inventario", "Inventario"),
         new(new Guid("a0000000-0000-0000-0000-000000000011"), InventoryManage, "Gestionar inventario", "Inventario"),
+        new(new Guid("a0000000-0000-0000-0000-000000000015"), PartnersRead, "Ver clientes y proveedores", "Contactos"),
+        new(new Guid("a0000000-0000-0000-0000-000000000016"), PartnersManage, "Gestionar clientes y proveedores", "Contactos"),
         new(new Guid("a0000000-0000-0000-0000-000000000020"), SalesRead, "Ver ventas", "Ventas"),
         new(new Guid("a0000000-0000-0000-0000-000000000021"), SalesManage, "Gestionar ventas", "Ventas"),
         new(new Guid("a0000000-0000-0000-0000-000000000030"), PurchasesRead, "Ver compras", "Compras"),

@@ -1,6 +1,7 @@
 using System.Text.Json;
 using FluentValidation;
 using NovaERP.Application.Common.Exceptions;
+using NovaERP.Domain.Common.Exceptions;
 
 namespace NovaERP.API.Middleware;
 
@@ -25,6 +26,10 @@ public sealed class ExceptionHandlingMiddleware(
                 ex.Errors.Select(e => new { field = e.PropertyName, error = e.ErrorMessage }));
         }
         catch (ConflictException ex)
+        {
+            await WriteProblem(context, StatusCodes.Status409Conflict, ex.Message);
+        }
+        catch (DomainException ex)
         {
             await WriteProblem(context, StatusCodes.Status409Conflict, ex.Message);
         }

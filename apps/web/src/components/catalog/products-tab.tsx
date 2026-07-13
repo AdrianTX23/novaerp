@@ -1,0 +1,127 @@
+"use client";
+
+import { useState } from "react";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import { toast } from "sonner";
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@/components/ui/table";
+import { Badge } from "@/components/ui/badge";
+import { Switch } from "@/components/ui/switch";
+import { Input } from "@/components/ui/input";
+import { Skeleton } from "@/components/ui/skeleton";
+import { Button } from "@/components/ui/button";
+import { productsApi } from "@/lib/catalog-api";
+import { ApiError } from "@/lib/api-client";
+import { ProductFormDialog } from "@/components/catalog/product-form-dialog";
+import { AdjustStockDialog } from "@/components/catalog/adjust-stock-dialog";
+import { AlertTriangle } from "lucide-react";
+
+export function ProductsTab() {
+  const [search, setSearch] = useState("");
+  const [lowStockOnly, setLowStockOnly] = useState(false);
+  const queryClient = useQueryClient();
+
+  const productsQuery = useQuery({
+    queryKey: ["products", { search, lowStockOnly }],
+    queryFn: () => productsApi.list({ search: search || undefined, lowStockOnly }),
+  });
+
+  const toggleActive = useMutation({
+    mutationFn: (vars: { productId: string; isActive: boolean }) =>
+      vars.isActive ? productsApi.reactivate(vars.productId) : productsApi.deactivate(vars.productId),
+    onSuccess: () => queryClient.invalidateQueries({ queryKey: ["products"] }),
+    onError: (error) => {
+      const message = error instanceof ApiError ? error.problem.title : "No se pudo actualizar el estado.";
+      toast.error(message);
+    },
+  });
+
+  return (
+    <div className="grid gap-4">
+      <div className="flex flex-wrap items-center justify-between gap-2">
+        <div className="flex items-center gap-2">
+          <Input
+            placeholder="Buscar por nombre o SKU…"
+            value={search}
+            onChange={(e) => setSearch(e.target.value)}
+            className="w-56"
+          />
+          <Button
+            variant={lowStockOnly ? "default" : "outline"}
+            size="sm"
+            onClick={() => setLowStockOnly((v) => !v)}
+          >
+            <AlertTriangle />
+            Bajo stock
+          </Button>
+        </div>
+        <ProductFormDialog />
+      </div>
+
+      {productsQuery.isLoading ? (
+        <Skeleton className="h-40 w-full" />
+      ) : (
+        <Table>
+          <TableHeader>
+            <TableRow>
+              <TableHead>Producto</TableHead>
+              <TableHead>Categoría</TableHead>
+              <TableHead>Stock</TableHead>
+              <TableHead>Precio</TableHead>
+              <TableHead>Activo</TableHead>
+              <TableHead className="w-24" />
+            </TableRow>
+          </TableHeader>
+          <TableBody>
+            {productsQuery.data?.map((product) => (
+              <TableRow key={product.id}>
+                <TableCell className="font-medium">
+                  {product.name}
+                  <p className="text-muted-foreground text-xs">{product.sku}</p>
+                </TableCell>
+                <TableCell className="text-muted-foreground">{product.categoryName ?? "—"}</TableCell>
+                <TableCell>
+                  <div className="flex items-center gap-1.5">
+                    <span className="tabular-nums">{product.quantityOnHand} {product.unitOfMeasure}</span>
+                    {product.isLowStock && <Badge variant="destructive">Bajo stock</Badge>}
+                  </div>
+                </TableCell>
+                <TableCell className="tabular-nums text-muted-foreground">
+                  ${product.salePrice.toFixed(2)}
+                </TableCell>
+                <TableCell>
+                  <Switch
+                    checked={product.isActive}
+                    disabled={toggleActive.isPending}
+                    onCheckedChange={(checked) =>
+                      toggleActive.mutate({ productId: product.id, isActive: checked })
+                    }
+                  />
+                </TableCell>
+                <TableCell>
+                  <div className="flex items-center gap-1">
+                    <AdjustStockDialog product={product} />
+                    <ProductFormDialog product={product} />
+                  </div>
+                </TableCell>
+              </TableRow>
+            ))}
+            {productsQuery.data?.length === 0 && (
+              <TableRow>
+                <TableCell colSpan={6} className="text-muted-foreground text-center">
+                  No hay productos que coincidan.
+                </TableCell>
+              </TableRow>
+            )}
+          </TableBody>
+        </Table>
+      )}
+    </div>
+  );
+}
