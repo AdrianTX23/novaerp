@@ -123,3 +123,38 @@ export interface SalesOrderDetail {
   totalAmount: number;
   lines: SalesOrderLineDto[];
 }
+
+/** Coincide con PurchaseOrderStatus del backend (string). */
+export type PurchaseOrderStatus = "Draft" | "Confirmed" | "Cancelled";
+
+export interface PurchaseOrderSummary {
+  id: string;
+  orderNumber: string;
+  supplierId: string;
+  supplierName: string;
+  status: PurchaseOrderStatus;
+  orderDate: string;
+  totalAmount: number;
+  lineCount: number;
+}
+
+export interface PurchaseOrderLineDto {
+  productId: string;
+  productSku: string;
+  productName: string;
+  quantity: number;
+  unitCost: number;
+  lineTotal: number;
+}
+
+export interface PurchaseOrderDetail {
+  id: string;
+  orderNumber: string;
+  supplierId: string;
+  supplierName: string;
+  status: PurchaseOrderStatus;
+  orderDate: string;
+  notes: string | null;
+  totalAmount: number;
+  lines: PurchaseOrderLineDto[];
+}
