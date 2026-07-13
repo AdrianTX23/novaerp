@@ -33,3 +33,25 @@ Al reasignar los roles de un usuario o los permisos de un rol, la primera implem
 - **Roles:** tabla con badge "Sistema" para los no editables, diálogo de creación/edición con permisos agrupados por módulo (Compras, Inventario, Ventas...), confirmación inline de dos pasos para eliminar (sin depender de `window.confirm` ni instalar un `AlertDialog` aparte).
 
 Todo verificado en navegador contra la API real: crear usuario, reasignar roles (agregando y quitando, incluyendo el caso que antes daba 500), activar/desactivar, crear/editar/eliminar rol custom.
+
+## Cobertura de tests (añadida después, ver conversación)
+
+Al cerrar la fase quedaban dos huecos: cero tests para los Handlers nuevos, y
+`NovaERP.IntegrationTests` era el placeholder vacío de `dotnet new xunit`
+(`UnitTest1 → Test1() {}`). Se resolvieron así:
+
+- **`NovaERP.UnitTests`** (27 tests, EF Core InMemory): un test por Handler y
+  por guarda de negocio (auto-desactivación, último Owner, roles de sistema
+  inmutables, rol con usuarios asignados). Usa un `NovaErpDbContext` real
+  construido a mano (mismo patrón que `NovaErpDbContextFactory`, el factory de
+  design-time de EF) sobre el proveedor InMemory — rápido, sin Docker.
+- **`NovaERP.IntegrationTests`** (6 tests, `WebApplicationFactory<Program>` +
+  Postgres real de `docker-compose.yml`): ejercita la app completa por HTTP
+  (middleware, JWT, EF sobre Npgsql de verdad). Incluye la regresión real del
+  bug de concurrencia — reasignar roles/permisos manteniendo unos, agregando
+  otros y quitando un tercero en la misma llamada — que el proveedor InMemory
+  no puede reproducir porque el bug era específico de cómo Npgsql traduce el
+  fixup de EF, no de la lógica en sí.
+- CI (`.github/workflows/ci.yml`) gana servicios de Postgres y Redis para que
+  `dotnet test` siga pasando en GitHub Actions con las mismas credenciales que
+  el `docker-compose.yml` local.

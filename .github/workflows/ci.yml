@@ -23,6 +23,33 @@ jobs:
   api:
     name: API (build, test)
     runs-on: ubuntu-latest
+    # NovaERP.IntegrationTests levanta la app real vía WebApplicationFactory y
+    # aplica las migraciones contra este Postgres — mismas credenciales que
+    # docker-compose.yml para que appsettings.Development.json funcione sin
+    # overrides.
+    services:
+      postgres:
+        image: postgres:17-alpine
+        env:
+          POSTGRES_DB: novaerp
+          POSTGRES_USER: novaerp
+          POSTGRES_PASSWORD: novaerp_dev
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd "pg_isready -U novaerp -d novaerp"
+          --health-interval 5s
+          --health-timeout 5s
+          --health-retries 10
+      redis:
+        image: redis:7-alpine
+        ports:
+          - 6379:6379
+        options: >-
+          --health-cmd "redis-cli ping"
+          --health-interval 5s
+          --health-timeout 5s
+          --health-retries 10
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-dotnet@v4

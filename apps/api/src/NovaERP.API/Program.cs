@@ -77,3 +77,8 @@ app.MapControllers();
 app.MapHealthChecks("/health");
 
 app.Run();
+
+// Expone la clase Program (generada implícitamente por top-level statements)
+// para que WebApplicationFactory<Program> pueda levantar la app en tests de
+// integración reales.
+public partial class Program;
