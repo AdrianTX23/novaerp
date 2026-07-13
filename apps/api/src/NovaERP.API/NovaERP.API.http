@@ -1,0 +1,6 @@
+@NovaERP.API_HostAddress = http://localhost:5234
+
+GET {{NovaERP.API_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###
