@@ -36,4 +36,6 @@ public sealed class User : TenantAuditableEntity
     public void UpdatePasswordHash(string passwordHash) => PasswordHash = passwordHash;
 
     public void Deactivate() => IsActive = false;
+
+    public void Reactivate() => IsActive = true;
 }

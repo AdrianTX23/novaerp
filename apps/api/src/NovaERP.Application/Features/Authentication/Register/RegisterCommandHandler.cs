@@ -28,6 +28,8 @@ public sealed partial class RegisterCommandHandler(
 
         var tenant = new Tenant(request.CompanyName.Trim(), slug);
         var ownerRole = SystemRoles.CreateOwner(tenant.Id);
+        var adminRole = SystemRoles.CreateAdmin(tenant.Id);
+        var memberRole = SystemRoles.CreateMember(tenant.Id);
 
         var user = new User(
             tenant.Id,
@@ -37,7 +39,7 @@ public sealed partial class RegisterCommandHandler(
         user.AssignRole(ownerRole.Id);
 
         db.Tenants.Add(tenant);
-        db.Roles.Add(ownerRole);
+        db.Roles.AddRange(ownerRole, adminRole, memberRole);
         db.Users.Add(user);
         await db.SaveChangesAsync(ct);
 

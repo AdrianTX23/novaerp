@@ -36,4 +36,10 @@ public sealed class Role : TenantAuditableEntity
 
         _permissions.Add(new RolePermission(Id, permissionId));
     }
+
+    public void Rename(string name, string? description)
+    {
+        Name = name;
+        Description = description;
+    }
 }
