@@ -112,6 +112,63 @@ export interface PartnerDto {
   isActive: boolean;
 }
 
+/** Coincide con InvoiceStatus del backend (string). */
+export type InvoiceStatus = "Issued" | "PartiallyPaid" | "Paid" | "Void";
+
+/** Coincide con PaymentMethod del backend (enum por número). */
+export const PaymentMethod = {
+  Cash: 0,
+  Transfer: 1,
+  Card: 2,
+  Other: 3,
+} as const;
+
+export interface InvoiceSummary {
+  id: string;
+  invoiceNumber: string;
+  customerId: string;
+  customerName: string;
+  status: InvoiceStatus;
+  issueDate: string;
+  dueDate: string;
+  total: number;
+  amountPaid: number;
+  outstandingBalance: number;
+}
+
+export interface InvoiceLineDto {
+  productSku: string;
+  productName: string;
+  quantity: number;
+  unitPrice: number;
+  lineTotal: number;
+}
+
+export interface PaymentDto {
+  id: string;
+  amount: number;
+  paidAt: string;
+  method: string;
+  reference: string | null;
+}
+
+export interface InvoiceDetail {
+  id: string;
+  invoiceNumber: string;
+  salesOrderId: string;
+  customerId: string;
+  customerName: string;
+  status: InvoiceStatus;
+  issueDate: string;
+  dueDate: string;
+  total: number;
+  amountPaid: number;
+  outstandingBalance: number;
+  notes: string | null;
+  lines: InvoiceLineDto[];
+  payments: PaymentDto[];
+}
+
 /** Coincide con SalesOrderStatus del backend (string). */
 export type SalesOrderStatus = "Draft" | "Confirmed" | "Cancelled";
 

@@ -26,6 +26,10 @@ public static class Permissions
     public const string SalesRead = "sales.read";
     public const string SalesManage = "sales.manage";
 
+    // Facturación
+    public const string InvoicesRead = "invoices.read";
+    public const string InvoicesManage = "invoices.manage";
+
     // Compras
     public const string PurchasesRead = "purchases.read";
     public const string PurchasesManage = "purchases.manage";
@@ -44,6 +48,8 @@ public static class Permissions
         new(new Guid("a0000000-0000-0000-0000-000000000016"), PartnersManage, "Gestionar clientes y proveedores", "Contactos"),
         new(new Guid("a0000000-0000-0000-0000-000000000020"), SalesRead, "Ver ventas", "Ventas"),
         new(new Guid("a0000000-0000-0000-0000-000000000021"), SalesManage, "Gestionar ventas", "Ventas"),
+        new(new Guid("a0000000-0000-0000-0000-000000000025"), InvoicesRead, "Ver facturas", "Facturación"),
+        new(new Guid("a0000000-0000-0000-0000-000000000026"), InvoicesManage, "Emitir facturas y registrar pagos", "Facturación"),
         new(new Guid("a0000000-0000-0000-0000-000000000030"), PurchasesRead, "Ver compras", "Compras"),
         new(new Guid("a0000000-0000-0000-0000-000000000031"), PurchasesManage, "Gestionar compras", "Compras"),
         new(new Guid("a0000000-0000-0000-0000-000000000040"), ReportsRead, "Ver reportes", "Reportes"),

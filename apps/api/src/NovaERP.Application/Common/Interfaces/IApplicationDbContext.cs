@@ -1,6 +1,7 @@
 using Microsoft.EntityFrameworkCore;
 using NovaERP.Domain.Catalog;
 using NovaERP.Domain.Identity;
+using NovaERP.Domain.Invoicing;
 using NovaERP.Domain.Partners;
 using NovaERP.Domain.Purchasing;
 using NovaERP.Domain.Sales;
@@ -28,6 +29,9 @@ public interface IApplicationDbContext
     DbSet<SalesOrderLine> SalesOrderLines { get; }
     DbSet<PurchaseOrder> PurchaseOrders { get; }
     DbSet<PurchaseOrderLine> PurchaseOrderLines { get; }
+    DbSet<Invoice> Invoices { get; }
+    DbSet<InvoiceLine> InvoiceLines { get; }
+    DbSet<Payment> Payments { get; }
 
     Task<int> SaveChangesAsync(CancellationToken cancellationToken = default);
 }

@@ -4,6 +4,7 @@ using NovaERP.Application.Common.Interfaces;
 using NovaERP.Domain.Catalog;
 using NovaERP.Domain.Common;
 using NovaERP.Domain.Identity;
+using NovaERP.Domain.Invoicing;
 using NovaERP.Domain.Partners;
 using NovaERP.Domain.Purchasing;
 using NovaERP.Domain.Sales;
@@ -40,6 +41,9 @@ public sealed class NovaErpDbContext(
     public DbSet<SalesOrderLine> SalesOrderLines => Set<SalesOrderLine>();
     public DbSet<PurchaseOrder> PurchaseOrders => Set<PurchaseOrder>();
     public DbSet<PurchaseOrderLine> PurchaseOrderLines => Set<PurchaseOrderLine>();
+    public DbSet<Invoice> Invoices => Set<Invoice>();
+    public DbSet<InvoiceLine> InvoiceLines => Set<InvoiceLine>();
+    public DbSet<Payment> Payments => Set<Payment>();
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
