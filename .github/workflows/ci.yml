@@ -50,6 +50,14 @@ jobs:
           --health-interval 5s
           --health-timeout 5s
           --health-retries 10
+    # En local el signing key sale de `dotnet user-secrets` (fuera del repo, a
+    # propósito). CI no tiene esos user-secrets, y Jwt:SigningKey está vacío en
+    # appsettings.json, así que la validación de arranque (ValidateOnStart)
+    # tumbaba el host de NovaErpWebApplicationFactory antes de correr un solo
+    # test de integración. Esta clave es solo para firmar JWTs efímeros contra
+    # el Postgres desechable del runner — no protege nada real.
+    env:
+      Jwt__SigningKey: "ci-only-signing-key-not-a-real-secret-1234567890"
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-dotnet@v4

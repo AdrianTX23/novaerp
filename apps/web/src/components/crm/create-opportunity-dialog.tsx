@@ -91,7 +91,7 @@ export function CreateOpportunityDialog() {
       <DialogContent className="sm:max-w-md">
         <DialogHeader>
           <DialogTitle>Nueva oportunidad</DialogTitle>
-          <DialogDescription>Un negocio potencial con un cliente. Empieza en la etapa "Nuevo".</DialogDescription>
+          <DialogDescription>Un negocio potencial con un cliente. Empieza en la etapa &quot;Nuevo&quot;.</DialogDescription>
         </DialogHeader>
 
         <form className="grid gap-4" onSubmit={handleSubmit(onSubmit)}>
