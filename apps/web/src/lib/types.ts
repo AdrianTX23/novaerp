@@ -127,6 +127,63 @@ export const AccountType = {
   Expense: 4,
 } as const;
 
+export interface DailySalesPoint {
+  date: string;
+  total: number;
+  orderCount: number;
+}
+
+export interface SalesReportDto {
+  from: string;
+  to: string;
+  totalSales: number;
+  orderCount: number;
+  averageOrderValue: number;
+  dailyBreakdown: DailySalesPoint[];
+}
+
+export interface CategoryValuationRow {
+  categoryName: string;
+  productCount: number;
+  value: number;
+}
+
+export interface LowStockRow {
+  sku: string;
+  name: string;
+  quantityOnHand: number;
+  reorderPoint: number;
+}
+
+export interface InventoryReportDto {
+  totalValue: number;
+  totalProducts: number;
+  byCategory: CategoryValuationRow[];
+  lowStock: LowStockRow[];
+}
+
+export interface ReceivableRow {
+  invoiceId: string;
+  invoiceNumber: string;
+  customerName: string;
+  dueDate: string;
+  outstandingBalance: number;
+  daysOverdue: number;
+  bucket: string;
+}
+
+export interface AgingBucketTotal {
+  bucket: string;
+  total: number;
+  count: number;
+}
+
+export interface ReceivablesReportDto {
+  totalOutstanding: number;
+  buckets: AgingBucketTotal[];
+  invoices: ReceivableRow[];
+}
+
 /** Coincide con OpportunityStage del backend (enum por número). */
 export const OpportunityStage = {
   New: 0,
