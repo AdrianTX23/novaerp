@@ -38,6 +38,10 @@ public static class Permissions
     public const string AccountingRead = "accounting.read";
     public const string AccountingManage = "accounting.manage";
 
+    // CRM
+    public const string CrmRead = "crm.read";
+    public const string CrmManage = "crm.manage";
+
     // Compras
     public const string PurchasesRead = "purchases.read";
     public const string PurchasesManage = "purchases.manage";
@@ -62,6 +66,8 @@ public static class Permissions
         new(new Guid("a0000000-0000-0000-0000-000000000029"), CashManage, "Registrar movimientos de caja", "Caja"),
         new(new Guid("a0000000-0000-0000-0000-00000000002a"), AccountingRead, "Ver la contabilidad", "Contabilidad"),
         new(new Guid("a0000000-0000-0000-0000-00000000002b"), AccountingManage, "Gestionar cuentas y asientos", "Contabilidad"),
+        new(new Guid("a0000000-0000-0000-0000-00000000002c"), CrmRead, "Ver el CRM", "CRM"),
+        new(new Guid("a0000000-0000-0000-0000-00000000002d"), CrmManage, "Gestionar oportunidades", "CRM"),
         new(new Guid("a0000000-0000-0000-0000-000000000030"), PurchasesRead, "Ver compras", "Compras"),
         new(new Guid("a0000000-0000-0000-0000-000000000031"), PurchasesManage, "Gestionar compras", "Compras"),
         new(new Guid("a0000000-0000-0000-0000-000000000040"), ReportsRead, "Ver reportes", "Reportes"),

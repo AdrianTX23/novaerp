@@ -127,6 +127,41 @@ export const AccountType = {
   Expense: 4,
 } as const;
 
+/** Coincide con OpportunityStage del backend (enum por número). */
+export const OpportunityStage = {
+  New: 0,
+  Qualified: 1,
+  Proposal: 2,
+  Won: 3,
+  Lost: 4,
+} as const;
+
+export type OpportunityStageName = "New" | "Qualified" | "Proposal" | "Won" | "Lost";
+
+export interface OpportunityDto {
+  id: string;
+  customerId: string;
+  customerName: string;
+  title: string;
+  estimatedValue: number;
+  stage: OpportunityStageName;
+  expectedCloseDate: string | null;
+  notes: string | null;
+}
+
+export interface StageSummary {
+  stage: OpportunityStageName;
+  count: number;
+  value: number;
+}
+
+export interface PipelineSummaryDto {
+  openValue: number;
+  openCount: number;
+  wonThisMonth: number;
+  byStage: StageSummary[];
+}
+
 export type AccountTypeName = "Asset" | "Liability" | "Equity" | "Income" | "Expense";
 
 export interface AccountDto {

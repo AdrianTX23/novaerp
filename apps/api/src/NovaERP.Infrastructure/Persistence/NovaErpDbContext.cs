@@ -5,6 +5,7 @@ using NovaERP.Domain.Accounting;
 using NovaERP.Domain.Cash;
 using NovaERP.Domain.Catalog;
 using NovaERP.Domain.Common;
+using NovaERP.Domain.Crm;
 using NovaERP.Domain.Identity;
 using NovaERP.Domain.Invoicing;
 using NovaERP.Domain.Partners;
@@ -50,6 +51,7 @@ public sealed class NovaErpDbContext(
     public DbSet<Account> Accounts => Set<Account>();
     public DbSet<JournalEntry> JournalEntries => Set<JournalEntry>();
     public DbSet<JournalEntryLine> JournalEntryLines => Set<JournalEntryLine>();
+    public DbSet<Opportunity> Opportunities => Set<Opportunity>();
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {

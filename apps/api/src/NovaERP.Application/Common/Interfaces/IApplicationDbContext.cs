@@ -2,6 +2,7 @@ using Microsoft.EntityFrameworkCore;
 using NovaERP.Domain.Accounting;
 using NovaERP.Domain.Cash;
 using NovaERP.Domain.Catalog;
+using NovaERP.Domain.Crm;
 using NovaERP.Domain.Identity;
 using NovaERP.Domain.Invoicing;
 using NovaERP.Domain.Partners;
@@ -38,6 +39,7 @@ public interface IApplicationDbContext
     DbSet<Account> Accounts { get; }
     DbSet<JournalEntry> JournalEntries { get; }
     DbSet<JournalEntryLine> JournalEntryLines { get; }
+    DbSet<Opportunity> Opportunities { get; }
 
     Task<int> SaveChangesAsync(CancellationToken cancellationToken = default);
 }
