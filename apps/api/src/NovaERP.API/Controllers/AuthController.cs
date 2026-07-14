@@ -76,7 +76,13 @@ public sealed class AuthController(IMediator mediator) : ControllerBase
         {
             HttpOnly = true,
             Secure = true,
-            SameSite = SameSiteMode.Strict,
+            // None (no Strict): en producción el frontend (Vercel) y la API (Railway/
+            // Render) viven en dominios distintos, así que son "cross-site" para el
+            // navegador. Una cookie Strict jamás se envía en ese caso — el refresh
+            // silencioso quedaría roto en producción aunque funcione en local
+            // (localhost:3000/5080 sí cuentan como "same-site" entre sí). None exige
+            // Secure=true, que ya estaba puesto.
+            SameSite = SameSiteMode.None,
             Expires = result.RefreshTokenExpiresAt,
             Path = "/api/auth",
         });

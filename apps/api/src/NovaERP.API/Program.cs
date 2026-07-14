@@ -1,5 +1,6 @@
 using System.Text;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.HttpOverrides;
 using Microsoft.IdentityModel.Tokens;
 using NovaERP.API.Middleware;
 using NovaERP.Application;
@@ -65,6 +66,19 @@ if (app.Environment.IsDevelopment())
     app.MapOpenApi();
     app.MapScalarApiReference();
 }
+
+// Railway/Render terminan TLS en su proxy y reenvían por HTTP interno al
+// contenedor: sin esto, Kestrel ve cada request como HTTP y UseHttpsRedirection
+// entraría en bucle de redirección. KnownProxies/KnownNetworks se limpian con
+// .Clear() (no basta el inicializador de objeto: por defecto solo confían en
+// loopback, y la IP del proxy de estas plataformas no es fija ni local).
+var forwardedHeadersOptions = new ForwardedHeadersOptions
+{
+    ForwardedHeaders = ForwardedHeaders.XForwardedFor | ForwardedHeaders.XForwardedProto,
+};
+forwardedHeadersOptions.KnownProxies.Clear();
+forwardedHeadersOptions.KnownNetworks.Clear();
+app.UseForwardedHeaders(forwardedHeadersOptions);
 
 app.UseHttpsRedirection();
 app.UseCors("Default");
