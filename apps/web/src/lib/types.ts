@@ -112,6 +112,31 @@ export interface PartnerDto {
   isActive: boolean;
 }
 
+/** Coincide con CashMovementType del backend (enum por número). */
+export const CashMovementType = {
+  Income: 0,
+  Expense: 1,
+} as const;
+
+export interface CashSummaryDto {
+  balance: number;
+  totalIncome: number;
+  totalExpense: number;
+  incomeThisMonth: number;
+  expenseThisMonth: number;
+}
+
+export interface CashMovementDto {
+  id: string;
+  kind: "Income" | "Expense";
+  amount: number;
+  date: string;
+  concept: string;
+  description: string | null;
+  source: "Invoice" | "Manual";
+  canDelete: boolean;
+}
+
 /** Coincide con InvoiceStatus del backend (string). */
 export type InvoiceStatus = "Issued" | "PartiallyPaid" | "Paid" | "Void";
 

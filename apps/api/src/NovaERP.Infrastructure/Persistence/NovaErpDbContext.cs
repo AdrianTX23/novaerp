@@ -1,6 +1,7 @@
 using System.Reflection;
 using Microsoft.EntityFrameworkCore;
 using NovaERP.Application.Common.Interfaces;
+using NovaERP.Domain.Cash;
 using NovaERP.Domain.Catalog;
 using NovaERP.Domain.Common;
 using NovaERP.Domain.Identity;
@@ -44,6 +45,7 @@ public sealed class NovaErpDbContext(
     public DbSet<Invoice> Invoices => Set<Invoice>();
     public DbSet<InvoiceLine> InvoiceLines => Set<InvoiceLine>();
     public DbSet<Payment> Payments => Set<Payment>();
+    public DbSet<CashMovement> CashMovements => Set<CashMovement>();
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
