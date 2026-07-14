@@ -118,6 +118,59 @@ export const CashMovementType = {
   Expense: 1,
 } as const;
 
+/** Coincide con AccountType del backend (enum por número). */
+export const AccountType = {
+  Asset: 0,
+  Liability: 1,
+  Equity: 2,
+  Income: 3,
+  Expense: 4,
+} as const;
+
+export type AccountTypeName = "Asset" | "Liability" | "Equity" | "Income" | "Expense";
+
+export interface AccountDto {
+  id: string;
+  code: string;
+  name: string;
+  type: AccountTypeName;
+  isSystem: boolean;
+}
+
+export interface JournalEntryLineDto {
+  accountId: string;
+  accountCode: string;
+  accountName: string;
+  debit: number;
+  credit: number;
+}
+
+export interface JournalEntrySummary {
+  id: string;
+  number: string;
+  date: string;
+  description: string;
+  reference: string | null;
+  total: number;
+}
+
+export interface TrialBalanceRow {
+  accountId: string;
+  code: string;
+  name: string;
+  type: AccountTypeName;
+  totalDebit: number;
+  totalCredit: number;
+  balance: number;
+}
+
+export interface TrialBalanceDto {
+  rows: TrialBalanceRow[];
+  totalDebit: number;
+  totalCredit: number;
+  isBalanced: boolean;
+}
+
 export interface CashSummaryDto {
   balance: number;
   totalIncome: number;

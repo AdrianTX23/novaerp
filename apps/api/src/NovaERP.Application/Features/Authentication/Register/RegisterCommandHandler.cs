@@ -3,6 +3,7 @@ using MediatR;
 using Microsoft.EntityFrameworkCore;
 using NovaERP.Application.Common.Exceptions;
 using NovaERP.Application.Common.Interfaces;
+using NovaERP.Application.Features.Accounting.Common;
 using NovaERP.Application.Features.Authentication.Common;
 using NovaERP.Domain.Identity;
 
@@ -41,6 +42,7 @@ public sealed partial class RegisterCommandHandler(
         db.Tenants.Add(tenant);
         db.Roles.AddRange(ownerRole, adminRole, memberRole);
         db.Users.Add(user);
+        db.Accounts.AddRange(DefaultChartOfAccounts.CreateFor(tenant.Id));
         await db.SaveChangesAsync(ct);
 
         var permissions = Permissions.All.Select(p => p.Code).ToList();
