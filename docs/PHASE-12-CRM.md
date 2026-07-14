@@ -50,6 +50,12 @@ mover New→Qualified→Proposal→Won; mover a Lost; **mover una ganada → 409
 (cerrada); resumen con abierto 5000 (1 op) y ganado del mes 25000; oportunidad
 para un proveedor puro → 409.
 
+**Frontend:** verificado en el navegador con datos reales — el tablero muestra
+las 5 columnas (Nuevo, Calificado, Propuesta, Ganado, Perdido) con sus tarjetas,
+totales por columna, y resumen (pipeline abierto $85.000, 4 abiertas, ganado del
+mes $15.000). Las tarjetas en Ganado/Perdido no muestran el menú "Mover" —
+confirma que la regla de etapa terminal se refleja también en la UI.
+
 **Tests:** 8 nuevos (dominio: etapas, cierre terminal, valor no negativo;
 handlers: rechazo de no-cliente, resumen abierto/ganado, mover cerrada).
 Suite total: 112 unit + 6 integración, en verde.
