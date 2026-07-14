@@ -46,8 +46,13 @@ public static class DependencyInjection
         var redisConnectionString = configuration.GetConnectionString("Redis");
         if (!string.IsNullOrWhiteSpace(redisConnectionString))
         {
-            services.AddSingleton<IConnectionMultiplexer>(
-                ConnectionMultiplexer.Connect(redisConnectionString));
+            // Conexión perezosa y tolerante a fallos: Redis es para caché/SignalR,
+            // no ruta crítica. La factory (`sp => …`) evita conectar en el arranque
+            // —solo al primer uso— y AbortOnConnectFail=false deja la app viva y
+            // reintentando en segundo plano si Redis está caído.
+            var redisOptions = ConfigurationOptions.Parse(redisConnectionString);
+            redisOptions.AbortOnConnectFail = false;
+            services.AddSingleton<IConnectionMultiplexer>(_ => ConnectionMultiplexer.Connect(redisOptions));
         }
 
         services.AddHangfire(config => config
