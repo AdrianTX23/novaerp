@@ -22,6 +22,7 @@ public static class DependencyInjection
         services.AddScoped<ITenantProvider, TenantProvider>();
         services.AddScoped<ICurrentUserService, CurrentUserService>();
         services.AddScoped<AuditableEntitySaveChangesInterceptor>();
+        services.AddScoped<AuditLogSaveChangesInterceptor>();
 
         services.AddOptions<JwtOptions>()
             .Bind(configuration.GetSection(JwtOptions.SectionName))
@@ -38,7 +39,11 @@ public static class DependencyInjection
         services.AddDbContext<NovaErpDbContext>((sp, options) =>
         {
             options.UseNpgsql(connectionString);
-            options.AddInterceptors(sp.GetRequiredService<AuditableEntitySaveChangesInterceptor>());
+            // Orden importa: AuditLog debe ver el EntityState.Deleted real
+            // antes de que el otro interceptor lo convierta en soft-delete.
+            options.AddInterceptors(
+                sp.GetRequiredService<AuditLogSaveChangesInterceptor>(),
+                sp.GetRequiredService<AuditableEntitySaveChangesInterceptor>());
         });
 
         services.AddScoped<IApplicationDbContext>(sp => sp.GetRequiredService<NovaErpDbContext>());

@@ -1,5 +1,6 @@
 using Microsoft.EntityFrameworkCore;
 using NovaERP.Domain.Accounting;
+using NovaERP.Domain.Audit;
 using NovaERP.Domain.Cash;
 using NovaERP.Domain.Catalog;
 using NovaERP.Domain.Crm;
@@ -40,6 +41,7 @@ public interface IApplicationDbContext
     DbSet<JournalEntry> JournalEntries { get; }
     DbSet<JournalEntryLine> JournalEntryLines { get; }
     DbSet<Opportunity> Opportunities { get; }
+    DbSet<AuditLog> AuditLogs { get; }
 
     Task<int> SaveChangesAsync(CancellationToken cancellationToken = default);
 }

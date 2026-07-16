@@ -16,11 +16,13 @@ import {
   Users,
   FileBarChart,
   Settings,
+  History,
   Menu,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from "@/components/ui/sheet";
+import { useAuthStore } from "@/stores/auth-store";
 
 const NAV_ITEMS = [
   { href: "/dashboard", label: "Dashboard", icon: LayoutDashboard },
@@ -38,6 +40,7 @@ const NAV_ITEMS = [
 
 function NavLinks({ onNavigate }: { onNavigate?: () => void }) {
   const pathname = usePathname();
+  const canManage = useAuthStore((s) => s.user?.permissions.includes("users.manage") ?? false);
 
   return (
     <>
@@ -64,6 +67,17 @@ function NavLinks({ onNavigate }: { onNavigate?: () => void }) {
           );
         })}
       </nav>
+
+      {canManage && (
+        <Link
+          href="/dashboard/auditoria"
+          onClick={onNavigate}
+          className="text-sidebar-foreground/70 hover:bg-sidebar-accent/50 hover:text-sidebar-foreground flex items-center gap-2.5 rounded-md px-3 py-2 text-sm font-medium transition-colors"
+        >
+          <History className="size-4" strokeWidth={2} />
+          Auditoría
+        </Link>
+      )}
 
       <Link
         href="/dashboard/configuracion"

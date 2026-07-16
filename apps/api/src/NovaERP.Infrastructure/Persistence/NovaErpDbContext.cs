@@ -2,6 +2,7 @@ using System.Reflection;
 using Microsoft.EntityFrameworkCore;
 using NovaERP.Application.Common.Interfaces;
 using NovaERP.Domain.Accounting;
+using NovaERP.Domain.Audit;
 using NovaERP.Domain.Cash;
 using NovaERP.Domain.Catalog;
 using NovaERP.Domain.Common;
@@ -52,6 +53,7 @@ public sealed class NovaErpDbContext(
     public DbSet<JournalEntry> JournalEntries => Set<JournalEntry>();
     public DbSet<JournalEntryLine> JournalEntryLines => Set<JournalEntryLine>();
     public DbSet<Opportunity> Opportunities => Set<Opportunity>();
+    public DbSet<AuditLog> AuditLogs => Set<AuditLog>();
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
