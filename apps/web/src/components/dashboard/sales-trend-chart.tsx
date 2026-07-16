@@ -73,7 +73,7 @@ export function SalesTrendChart({ data }: { data: MonthlyPoint[] }) {
             <div className="text-muted-foreground text-xs">{monthLabel(point.month)}</div>
             <div
               className={`text-xs tabular-nums transition-colors ${
-                hover === i ? "text-foreground font-medium" : "text-muted-foreground/70"
+                hover === i ? "text-foreground font-medium" : "text-muted-foreground"
               }`}
             >
               {point.total > 0 ? formatMoney(point.total) : "—"}

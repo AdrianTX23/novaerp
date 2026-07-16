@@ -1,14 +1,10 @@
 import { z } from "zod";
+import { passwordSchema } from "@/lib/password-schema";
 
 export const createUserSchema = z.object({
   fullName: z.string().min(1, "Requerido").max(200),
   email: z.string().min(1, "Requerido").email("Email inválido"),
-  password: z
-    .string()
-    .min(8, "Debe tener al menos 8 caracteres")
-    .regex(/[A-Z]/, "Debe incluir una mayúscula")
-    .regex(/[a-z]/, "Debe incluir una minúscula")
-    .regex(/[0-9]/, "Debe incluir un número"),
+  password: passwordSchema,
   roleIds: z.array(z.string()).min(1, "Selecciona al menos un rol"),
 });
 

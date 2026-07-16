@@ -19,7 +19,7 @@ export default function GlobalError({
           Ocurrió un error inesperado. Puedes reintentar o volver al inicio.
         </p>
         {error.digest && (
-          <p className="text-muted-foreground/60 text-xs">Código: {error.digest}</p>
+          <p className="text-muted-foreground text-xs">Código: {error.digest}</p>
         )}
       </div>
       <div className="flex gap-2">

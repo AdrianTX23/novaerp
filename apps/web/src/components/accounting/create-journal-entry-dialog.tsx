@@ -110,7 +110,7 @@ export function CreateJournalEntryDialog() {
         </DialogHeader>
 
         <form className="grid gap-4" onSubmit={handleSubmit(onSubmit)}>
-          <div className="grid grid-cols-2 gap-4">
+          <div className="grid gap-4 sm:grid-cols-2">
             <div className="grid gap-1.5">
               <Label htmlFor="date">Fecha</Label>
               <Input id="date" type="date" {...register("date")} />
@@ -127,14 +127,14 @@ export function CreateJournalEntryDialog() {
           </div>
 
           <div className="grid gap-2">
-            <div className="text-muted-foreground grid grid-cols-[1fr_7rem_7rem_2rem] gap-2 text-xs font-medium">
+            <div className="text-muted-foreground grid grid-cols-[1fr_4.5rem_4.5rem_2rem] sm:grid-cols-[1fr_7rem_7rem_2rem] gap-2 text-xs font-medium">
               <span>Cuenta</span>
               <span className="text-right">Debe</span>
               <span className="text-right">Haber</span>
               <span />
             </div>
             {fields.map((field, index) => (
-              <div key={field.id} className="grid grid-cols-[1fr_7rem_7rem_2rem] items-center gap-2">
+              <div key={field.id} className="grid grid-cols-[1fr_4.5rem_4.5rem_2rem] sm:grid-cols-[1fr_7rem_7rem_2rem] items-center gap-2">
                 <Controller
                   control={control}
                   name={`lines.${index}.accountId`}
@@ -167,7 +167,7 @@ export function CreateJournalEntryDialog() {
             </Button>
           </div>
 
-          <div className="grid grid-cols-[1fr_7rem_7rem_2rem] gap-2 border-t pt-3 text-sm font-medium">
+          <div className="grid grid-cols-[1fr_4.5rem_4.5rem_2rem] sm:grid-cols-[1fr_7rem_7rem_2rem] gap-2 border-t pt-3 text-sm font-medium">
             <span className={cn(balanced ? "text-emerald-600 dark:text-emerald-500" : "text-muted-foreground")}>
               {balanced ? "El asiento cuadra ✓" : "Debe = Haber para cuadrar"}
             </span>

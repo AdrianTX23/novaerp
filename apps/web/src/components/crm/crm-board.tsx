@@ -93,7 +93,7 @@ export function CrmBoard() {
                     <OpportunityCard key={o.id} opp={o} closed={closed} onMove={move.mutate} busy={move.isPending} />
                   ))}
                   {byStage(stage).length === 0 && (
-                    <p className="text-muted-foreground/60 px-1 py-4 text-center text-xs">Sin oportunidades</p>
+                    <p className="text-muted-foreground px-1 py-4 text-center text-xs">Sin oportunidades</p>
                   )}
                 </div>
               </div>

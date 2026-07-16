@@ -90,7 +90,7 @@ export function RoleFormDialog({ role }: RoleFormDialogProps) {
       <DialogTrigger
         render={
           isEdit ? (
-            <Button variant="ghost" size="icon-sm"><Pencil /></Button>
+            <Button variant="ghost" size="icon-sm" aria-label="Editar rol"><Pencil /></Button>
           ) : (
             <Button><Plus />Nuevo rol</Button>
           )

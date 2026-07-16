@@ -106,7 +106,7 @@ export function ProductFormDialog({ product }: { product?: ProductSummary }) {
       <DialogTrigger
         render={
           isEdit ? (
-            <Button variant="ghost" size="icon-sm"><Pencil /></Button>
+            <Button variant="ghost" size="icon-sm" aria-label="Editar producto"><Pencil /></Button>
           ) : (
             <Button><Plus />Nuevo producto</Button>
           )
@@ -131,7 +131,7 @@ export function ProductFormDialog({ product }: { product?: ProductSummary }) {
           />
           <FormField id="name" label="Nombre" error={errors.name?.message} {...register("name")} />
 
-          <div className="grid grid-cols-2 gap-4">
+          <div className="grid gap-4 sm:grid-cols-2">
             <FormField
               id="unitOfMeasure"
               label="Unidad de medida"
@@ -168,7 +168,7 @@ export function ProductFormDialog({ product }: { product?: ProductSummary }) {
             </div>
           </div>
 
-          <div className="grid grid-cols-2 gap-4">
+          <div className="grid gap-4 sm:grid-cols-2">
             <FormField
               id="costPrice"
               label="Costo"
@@ -187,7 +187,7 @@ export function ProductFormDialog({ product }: { product?: ProductSummary }) {
             />
           </div>
 
-          <div className="grid grid-cols-2 gap-4">
+          <div className="grid gap-4 sm:grid-cols-2">
             <FormField
               id="reorderPoint"
               label="Punto de reorden (opcional)"

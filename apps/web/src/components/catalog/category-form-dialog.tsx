@@ -63,7 +63,7 @@ export function CategoryFormDialog({ category }: { category?: CategoryDto }) {
       <DialogTrigger
         render={
           isEdit ? (
-            <Button variant="ghost" size="icon-sm"><Pencil /></Button>
+            <Button variant="ghost" size="icon-sm" aria-label="Editar categoría"><Pencil /></Button>
           ) : (
             <Button><Plus />Nueva categoría</Button>
           )

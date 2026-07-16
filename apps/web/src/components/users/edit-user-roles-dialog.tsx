@@ -48,7 +48,7 @@ export function EditUserRolesDialog({ user }: { user: UserSummary }) {
         if (next) setSelected(user.roles.map((r) => r.id));
       }}
     >
-      <DialogTrigger render={<Button variant="ghost" size="icon-sm"><Pencil /></Button>} />
+      <DialogTrigger render={<Button variant="ghost" size="icon-sm" aria-label="Editar roles del usuario"><Pencil /></Button>} />
       <DialogContent>
         <DialogHeader>
           <DialogTitle>Roles de {user.fullName}</DialogTitle>

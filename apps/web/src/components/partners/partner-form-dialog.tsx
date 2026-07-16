@@ -86,7 +86,7 @@ export function PartnerFormDialog({
       <DialogTrigger
         render={
           isEdit ? (
-            <Button variant="ghost" size="icon-sm"><Pencil /></Button>
+            <Button variant="ghost" size="icon-sm" aria-label="Editar contacto"><Pencil /></Button>
           ) : (
             <Button><Plus />Nuevo contacto</Button>
           )
@@ -128,7 +128,7 @@ export function PartnerFormDialog({
             {errors.isCustomer && <p className="text-destructive text-xs">{errors.isCustomer.message}</p>}
           </div>
 
-          <div className="grid grid-cols-2 gap-4">
+          <div className="grid gap-4 sm:grid-cols-2">
             <FormField
               id="documentNumber"
               label="Documento fiscal (opcional)"
@@ -143,7 +143,7 @@ export function PartnerFormDialog({
               {...register("email")}
             />
           </div>
-          <div className="grid grid-cols-2 gap-4">
+          <div className="grid gap-4 sm:grid-cols-2">
             <FormField
               id="phone"
               label="Teléfono (opcional)"

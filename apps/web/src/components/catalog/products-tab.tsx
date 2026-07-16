@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useDeferredValue } from "react";
 import { keepPreviousData, useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import {
   Table,
@@ -17,6 +17,7 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { Button } from "@/components/ui/button";
 import { productsApi } from "@/lib/catalog-api";
 import { toastApiError } from "@/lib/api-errors";
+import { formatMoney } from "@/lib/utils";
 import { ProductFormDialog } from "@/components/catalog/product-form-dialog";
 import { AdjustStockDialog } from "@/components/catalog/adjust-stock-dialog";
 import { TablePagination } from "@/components/ui/table-pagination";
@@ -31,9 +32,13 @@ export function ProductsTab() {
   const [page, setPage] = useState(1);
   const queryClient = useQueryClient();
 
+  // Difiere el término de búsqueda: sin esto, cada tecla dispara una request
+  // nueva al API mientras el usuario todavía está escribiendo.
+  const deferredSearch = useDeferredValue(search);
+
   const productsQuery = useQuery({
-    queryKey: ["products", { search, lowStockOnly, page }],
-    queryFn: () => productsApi.list({ search: search || undefined, lowStockOnly, page, pageSize: PAGE_SIZE }),
+    queryKey: ["products", { search: deferredSearch, lowStockOnly, page }],
+    queryFn: () => productsApi.list({ search: deferredSearch || undefined, lowStockOnly, page, pageSize: PAGE_SIZE }),
     placeholderData: keepPreviousData,
   });
 
@@ -105,7 +110,7 @@ export function ProductsTab() {
                   </div>
                 </TableCell>
                 <TableCell className="tabular-nums text-muted-foreground">
-                  ${product.salePrice.toFixed(2)}
+                  {formatMoney(product.salePrice)}
                 </TableCell>
                 <TableCell>
                   <Switch

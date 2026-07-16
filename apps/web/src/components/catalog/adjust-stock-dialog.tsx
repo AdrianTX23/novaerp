@@ -43,7 +43,7 @@ export function AdjustStockDialog({ product }: { product: ProductSummary }) {
 
   return (
     <Dialog open={open} onOpenChange={(next) => { setOpen(next); if (!next) setDelta(""); }}>
-      <DialogTrigger render={<Button variant="ghost" size="icon-sm"><PackagePlus /></Button>} />
+      <DialogTrigger render={<Button variant="ghost" size="icon-sm" aria-label="Ajustar stock"><PackagePlus /></Button>} />
       <DialogContent>
         <DialogHeader>
           <DialogTitle>Ajustar stock de {product.name}</DialogTitle>
