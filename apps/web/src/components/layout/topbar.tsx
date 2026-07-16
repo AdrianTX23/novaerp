@@ -9,6 +9,7 @@ import { Button } from "@/components/ui/button";
 import {
   DropdownMenu,
   DropdownMenuContent,
+  DropdownMenuGroup,
   DropdownMenuItem,
   DropdownMenuLabel,
   DropdownMenuSeparator,
@@ -16,6 +17,7 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { useAuthStore } from "@/stores/auth-store";
 import { authApi } from "@/lib/auth-api";
+import { MobileSidebar } from "@/components/layout/sidebar";
 
 function initials(fullName: string) {
   return fullName
@@ -41,7 +43,7 @@ export function Topbar() {
 
   return (
     <header className="border-border flex h-14 shrink-0 items-center justify-between border-b px-4 md:px-6">
-      <div />
+      <MobileSidebar />
 
       <div className="flex items-center gap-2">
         <Button
@@ -68,10 +70,12 @@ export function Topbar() {
             }
           />
           <DropdownMenuContent align="end" className="w-56">
-            <DropdownMenuLabel className="font-normal">
-              <p className="text-sm font-medium">{user?.fullName}</p>
-              <p className="text-muted-foreground text-xs">{user?.email}</p>
-            </DropdownMenuLabel>
+            <DropdownMenuGroup>
+              <DropdownMenuLabel className="font-normal">
+                <p className="text-sm font-medium">{user?.fullName}</p>
+                <p className="text-muted-foreground text-xs">{user?.email}</p>
+              </DropdownMenuLabel>
+            </DropdownMenuGroup>
             <DropdownMenuSeparator />
             <DropdownMenuItem onClick={() => logout.mutate()} disabled={logout.isPending}>
               <LogOut className="size-4" />
