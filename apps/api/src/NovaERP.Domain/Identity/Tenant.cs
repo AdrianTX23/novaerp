@@ -30,4 +30,9 @@ public sealed class Tenant : BaseEntity, IAuditableEntity, ISoftDeletable
         Name = name;
         Slug = slug;
     }
+
+    public void Rename(string name)
+    {
+        Name = name;
+    }
 }

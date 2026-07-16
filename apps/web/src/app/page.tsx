@@ -16,5 +16,9 @@ export default function Home() {
     }
   }, [status, router]);
 
-  return null;
+  return (
+    <div className="flex flex-1 items-center justify-center">
+      <div className="border-muted-foreground/30 border-t-foreground size-6 animate-spin rounded-full border-2" />
+    </div>
+  );
 }
