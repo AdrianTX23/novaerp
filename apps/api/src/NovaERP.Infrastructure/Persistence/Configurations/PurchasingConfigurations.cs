@@ -22,6 +22,8 @@ public sealed class PurchaseOrderConfiguration : IEntityTypeConfiguration<Purcha
 
         builder.HasIndex(o => new { o.TenantId, o.SupplierId });
         builder.HasIndex(o => new { o.TenantId, o.OrderDate });
+        // Mismo patrón que en ventas: Status=Confirmed + rango de fechas.
+        builder.HasIndex(o => new { o.TenantId, o.Status, o.OrderDate });
 
         builder.HasOne<Partner>()
             .WithMany()

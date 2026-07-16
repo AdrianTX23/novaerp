@@ -40,8 +40,13 @@ public sealed class GetDashboardQueryHandler(IApplicationDbContext db)
             .Where(p => p.IsActive)
             .SumAsync(p => p.QuantityOnHand * p.CostPrice, ct);
 
-        // Mejor cliente por ingresos confirmados (histórico).
-        var topCustomer = await confirmedSales
+        // Mejor cliente por ingresos confirmados, acotado a la misma ventana de
+        // 6 meses que la tendencia: sin el filtro de fecha, esta agregación (y
+        // la de top productos, abajo) escala con TODO el histórico del tenant
+        // en cada carga del dashboard, no con la actividad reciente.
+        var recentSales = confirmedSales.Where(o => o.OrderDate >= trendStart);
+
+        var topCustomer = await recentSales
             .GroupBy(o => o.CustomerId)
             .Select(g => new { CustomerId = g.Key, Revenue = g.Sum(x => x.TotalAmount) })
             .OrderByDescending(x => x.Revenue)
@@ -73,9 +78,9 @@ public sealed class GetDashboardQueryHandler(IApplicationDbContext db)
             .ToList();
 
         // Top productos: Npgsql no traduce un GroupBy sobre un Contains de subquery,
-        // así que se materializan las líneas de pedidos confirmados (volumen acotado)
-        // y se agrupan en memoria.
-        var confirmedSalesIds = await confirmedSales.Select(o => o.Id).ToListAsync(ct);
+        // así que se materializan las líneas de pedidos confirmados de los últimos
+        // 6 meses (mismo acotamiento que arriba) y se agrupan en memoria.
+        var confirmedSalesIds = await recentSales.Select(o => o.Id).ToListAsync(ct);
         var confirmedLines = await db.SalesOrderLines
             .Where(l => confirmedSalesIds.Contains(l.SalesOrderId))
             .Select(l => new { l.ProductName, l.Quantity, l.LineTotal })

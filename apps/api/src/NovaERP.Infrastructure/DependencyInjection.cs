@@ -1,5 +1,3 @@
-using Hangfire;
-using Hangfire.PostgreSql;
 using Microsoft.AspNetCore.Http;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
@@ -65,10 +63,11 @@ public static class DependencyInjection
             services.AddSingleton<IConnectionMultiplexer>(_ => ConnectionMultiplexer.Connect(redisOptions));
         }
 
-        services.AddHangfire(config => config
-            .UsePostgreSqlStorage(options => options.UseNpgsqlConnection(connectionString)));
-        services.AddHangfireServer();
-
+        // Nota: Hangfire estuvo registrado aquí "para el futuro" pero sin un
+        // solo job definido — un servidor de background jobs completo corriendo
+        // en producción sin ejecutar nada. Se quitó; reintroducirlo cuando el
+        // módulo de Notificaciones defina jobs reales (ej. chequeo de facturas
+        // vencidas).
         return services;
     }
 }

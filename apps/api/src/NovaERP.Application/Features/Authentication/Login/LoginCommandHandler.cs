@@ -28,6 +28,16 @@ public sealed class LoginCommandHandler(
             throw new UnauthorizedException("Email o contraseña incorrectos.");
         }
 
+        // Si el framework subió los parámetros de PBKDF2 desde que este hash se
+        // generó, es el único momento con la password en claro para regenerarlo
+        // — sin esto, los usuarios quedan para siempre en el costo de hash con
+        // el que se registraron.
+        if (passwordHasher.NeedsRehash(request.Password, user.PasswordHash))
+        {
+            user.UpdatePasswordHash(passwordHasher.Hash(request.Password));
+            await db.SaveChangesAsync(ct);
+        }
+
         var (roles, permissions) = await PermissionLoader.LoadAsync(db, user.Id, ct);
 
         return await AuthResultFactory.CreateAsync(db, tokenService, user, roles, permissions, ct);

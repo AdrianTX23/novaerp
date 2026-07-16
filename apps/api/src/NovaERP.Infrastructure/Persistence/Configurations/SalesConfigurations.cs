@@ -24,6 +24,11 @@ public sealed class SalesOrderConfiguration : IEntityTypeConfiguration<SalesOrde
         builder.HasIndex(o => new { o.TenantId, o.CustomerId });
         builder.HasIndex(o => new { o.TenantId, o.OrderDate });
 
+        // El patrón real del dashboard/reportes es Status=Confirmed + rango de
+        // fechas: sin este índice, Postgres escanea por fecha y filtra Status
+        // en memoria (o al revés).
+        builder.HasIndex(o => new { o.TenantId, o.Status, o.OrderDate });
+
         builder.HasOne<Partner>()
             .WithMany()
             .HasForeignKey(o => o.CustomerId)

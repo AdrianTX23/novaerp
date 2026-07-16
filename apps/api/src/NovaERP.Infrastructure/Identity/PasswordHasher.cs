@@ -25,4 +25,7 @@ public sealed class PasswordHasher : IPasswordHasher
         return hash is not null && result is PasswordVerificationResult.Success
             or PasswordVerificationResult.SuccessRehashNeeded;
     }
+
+    public bool NeedsRehash(string password, string hash) =>
+        _inner.VerifyHashedPassword(null!, hash, password) == PasswordVerificationResult.SuccessRehashNeeded;
 }
