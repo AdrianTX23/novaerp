@@ -19,7 +19,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { accountingApi } from "@/lib/accounting-api";
-import { ApiError } from "@/lib/api-client";
+import { toastApiError } from "@/lib/api-errors";
 import { formatMoney, cn } from "@/lib/utils";
 
 interface LineField {
@@ -78,12 +78,7 @@ export function CreateJournalEntryDialog() {
       setOpen(false);
     },
     onError: (error) => {
-      if (error instanceof ApiError && error.problem.errors?.length) {
-        error.problem.errors.forEach((e) => toast.error(e.error));
-        return;
-      }
-      const message = error instanceof ApiError ? error.problem.title : "No se pudo registrar el asiento.";
-      toast.error(message);
+      toastApiError(error, "No se pudo registrar el asiento.");
     },
   });
 

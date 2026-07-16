@@ -5,7 +5,7 @@ import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import { categoriesApi } from "@/lib/catalog-api";
-import { ApiError } from "@/lib/api-client";
+import { toastApiError } from "@/lib/api-errors";
 import { Trash2 } from "lucide-react";
 
 export function DeleteCategoryButton({ categoryId }: { categoryId: string }) {
@@ -19,8 +19,7 @@ export function DeleteCategoryButton({ categoryId }: { categoryId: string }) {
       toast.success("Categoría eliminada.");
     },
     onError: (error) => {
-      const message = error instanceof ApiError ? error.problem.title : "No se pudo eliminar la categoría.";
-      toast.error(message);
+      toastApiError(error, "No se pudo eliminar la categoría.");
       setConfirming(false);
     },
   });

@@ -13,6 +13,7 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { crmApi } from "@/lib/crm-api";
 import { ApiError } from "@/lib/api-client";
+import { toastApiError } from "@/lib/api-errors";
 import type { OpportunityDto, OpportunityStageName } from "@/lib/types";
 import { formatMoney, cn } from "@/lib/utils";
 import { BOARD_STAGES, STAGE_LABEL, STAGE_VALUE, isClosedStage } from "@/components/crm/stage-meta";
@@ -34,8 +35,7 @@ export function CrmBoard() {
       toast.success("Oportunidad movida.");
     },
     onError: (error) => {
-      const message = error instanceof ApiError ? error.problem.title : "No se pudo mover la oportunidad.";
-      toast.error(message);
+      toastApiError(error, "No se pudo mover la oportunidad.");
     },
   });
 

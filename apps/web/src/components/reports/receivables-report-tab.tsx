@@ -15,6 +15,7 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { reportsApi } from "@/lib/reports-api";
 import { formatMoney, cn } from "@/lib/utils";
 import { KpiCard } from "@/components/dashboard/kpi-card";
+import { QueryError } from "@/components/layout/query-error";
 
 const BUCKET_VARIANT: Record<string, "secondary" | "outline" | "destructive"> = {
   "Al día": "secondary",
@@ -27,6 +28,9 @@ export function ReceivablesReportTab() {
   const reportQuery = useQuery({ queryKey: ["reports", "receivables"], queryFn: reportsApi.receivables });
   const data = reportQuery.data;
 
+  if (reportQuery.isError) {
+    return <QueryError error={reportQuery.error} forbiddenMessage="Tu rol no tiene acceso a los reportes." />;
+  }
   if (reportQuery.isLoading) {
     return <Skeleton className="h-64 w-full" />;
   }

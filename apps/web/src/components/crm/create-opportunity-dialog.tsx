@@ -21,7 +21,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { FormField } from "@/components/auth/form-field";
 import { partnersApi } from "@/lib/partners-api";
 import { crmApi } from "@/lib/crm-api";
-import { ApiError } from "@/lib/api-client";
+import { toastApiError } from "@/lib/api-errors";
 import { PartnerType } from "@/lib/types";
 
 interface FormValues {
@@ -62,12 +62,7 @@ export function CreateOpportunityDialog() {
       setOpen(false);
     },
     onError: (error) => {
-      if (error instanceof ApiError && error.problem.errors?.length) {
-        error.problem.errors.forEach((e) => toast.error(e.error));
-        return;
-      }
-      const message = error instanceof ApiError ? error.problem.title : "No se pudo crear la oportunidad.";
-      toast.error(message);
+      toastApiError(error, "No se pudo crear la oportunidad.");
     },
   });
 

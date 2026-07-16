@@ -21,7 +21,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { partnersApi } from "@/lib/partners-api";
 import { productsApi } from "@/lib/catalog-api";
 import { salesApi } from "@/lib/sales-api";
-import { ApiError } from "@/lib/api-client";
+import { toastApiError } from "@/lib/api-errors";
 import { PartnerType } from "@/lib/types";
 import { formatMoney } from "@/lib/utils";
 
@@ -91,12 +91,7 @@ export function CreateSalesOrderDialog() {
       setOpen(false);
     },
     onError: (error) => {
-      if (error instanceof ApiError && error.problem.errors?.length) {
-        error.problem.errors.forEach((e) => toast.error(e.error));
-        return;
-      }
-      const message = error instanceof ApiError ? error.problem.title : "No se pudo crear el pedido.";
-      toast.error(message);
+      toastApiError(error, "No se pudo crear el pedido.");
     },
   });
 

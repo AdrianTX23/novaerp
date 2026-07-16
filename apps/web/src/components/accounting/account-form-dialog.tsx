@@ -19,7 +19,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { FormField } from "@/components/auth/form-field";
 import { Label } from "@/components/ui/label";
 import { accountingApi } from "@/lib/accounting-api";
-import { ApiError } from "@/lib/api-client";
+import { toastApiError } from "@/lib/api-errors";
 import { AccountType } from "@/lib/types";
 import { ACCOUNT_TYPE_LABEL } from "@/components/accounting/account-type-label";
 
@@ -46,8 +46,7 @@ export function AccountFormDialog() {
       setOpen(false);
     },
     onError: (error) => {
-      const message = error instanceof ApiError ? error.problem.title : "No se pudo crear la cuenta.";
-      toast.error(message);
+      toastApiError(error, "No se pudo crear la cuenta.");
     },
   });
 

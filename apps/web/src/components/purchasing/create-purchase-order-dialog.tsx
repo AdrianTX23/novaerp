@@ -21,7 +21,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { partnersApi } from "@/lib/partners-api";
 import { productsApi } from "@/lib/catalog-api";
 import { purchasingApi } from "@/lib/purchasing-api";
-import { ApiError } from "@/lib/api-client";
+import { toastApiError } from "@/lib/api-errors";
 import { PartnerType } from "@/lib/types";
 import { formatMoney } from "@/lib/utils";
 
@@ -90,12 +90,7 @@ export function CreatePurchaseOrderDialog() {
       setOpen(false);
     },
     onError: (error) => {
-      if (error instanceof ApiError && error.problem.errors?.length) {
-        error.problem.errors.forEach((e) => toast.error(e.error));
-        return;
-      }
-      const message = error instanceof ApiError ? error.problem.title : "No se pudo crear la orden.";
-      toast.error(message);
+      toastApiError(error, "No se pudo crear la orden.");
     },
   });
 

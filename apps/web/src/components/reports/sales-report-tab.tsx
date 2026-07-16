@@ -9,6 +9,7 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { reportsApi } from "@/lib/reports-api";
 import { formatMoney } from "@/lib/utils";
 import { KpiCard } from "@/components/dashboard/kpi-card";
+import { QueryError } from "@/components/layout/query-error";
 
 const today = () => new Date().toISOString().slice(0, 10);
 const firstOfMonth = () => {
@@ -40,7 +41,9 @@ export function SalesReportTab() {
         </div>
       </div>
 
-      {reportQuery.isLoading ? (
+      {reportQuery.isError ? (
+        <QueryError error={reportQuery.error} forbiddenMessage="Tu rol no tiene acceso a los reportes." />
+      ) : reportQuery.isLoading ? (
         <Skeleton className="h-64 w-full" />
       ) : data ? (
         <>

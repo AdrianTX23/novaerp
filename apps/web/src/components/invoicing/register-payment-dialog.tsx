@@ -18,7 +18,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { invoicingApi } from "@/lib/invoicing-api";
-import { ApiError } from "@/lib/api-client";
+import { toastApiError } from "@/lib/api-errors";
 import { PaymentMethod, type InvoiceSummary } from "@/lib/types";
 import { formatMoney } from "@/lib/utils";
 
@@ -61,16 +61,14 @@ export function RegisterPaymentDialog({ invoice }: { invoice: InvoiceSummary }) 
       }),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["invoices"] });
+      // El cobro genera un movimiento de caja en el backend: sin esto, una
+      // vista de Caja abierta muestra el saldo viejo hasta que expire el cache.
+      queryClient.invalidateQueries({ queryKey: ["cash"] });
       toast.success("Pago registrado.");
       setOpen(false);
     },
     onError: (error) => {
-      if (error instanceof ApiError && error.problem.errors?.length) {
-        error.problem.errors.forEach((e) => toast.error(e.error));
-        return;
-      }
-      const message = error instanceof ApiError ? error.problem.title : "No se pudo registrar el pago.";
-      toast.error(message);
+      toastApiError(error, "No se pudo registrar el pago.");
     },
   });
 

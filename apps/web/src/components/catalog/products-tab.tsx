@@ -2,7 +2,6 @@
 
 import { useState } from "react";
 import { keepPreviousData, useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import { toast } from "sonner";
 import {
   Table,
   TableBody,
@@ -17,11 +16,12 @@ import { Input } from "@/components/ui/input";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Button } from "@/components/ui/button";
 import { productsApi } from "@/lib/catalog-api";
-import { ApiError } from "@/lib/api-client";
+import { toastApiError } from "@/lib/api-errors";
 import { ProductFormDialog } from "@/components/catalog/product-form-dialog";
 import { AdjustStockDialog } from "@/components/catalog/adjust-stock-dialog";
 import { TablePagination } from "@/components/ui/table-pagination";
 import { AlertTriangle } from "lucide-react";
+import { QueryError } from "@/components/layout/query-error";
 
 const PAGE_SIZE = 50;
 
@@ -42,8 +42,7 @@ export function ProductsTab() {
       vars.isActive ? productsApi.reactivate(vars.productId) : productsApi.deactivate(vars.productId),
     onSuccess: () => queryClient.invalidateQueries({ queryKey: ["products"] }),
     onError: (error) => {
-      const message = error instanceof ApiError ? error.problem.title : "No se pudo actualizar el estado.";
-      toast.error(message);
+      toastApiError(error, "No se pudo actualizar el estado.");
     },
   });
 
@@ -75,7 +74,9 @@ export function ProductsTab() {
         <ProductFormDialog />
       </div>
 
-      {productsQuery.isLoading ? (
+      {productsQuery.isError ? (
+        <QueryError error={productsQuery.error} forbiddenMessage="Tu rol no tiene acceso al inventario." />
+      ) : productsQuery.isLoading ? (
         <Skeleton className="h-40 w-full" />
       ) : (
         <Table>

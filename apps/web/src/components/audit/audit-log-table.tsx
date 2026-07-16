@@ -18,6 +18,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { auditApi } from "@/lib/audit-api";
 import { AuditLogRow } from "@/components/audit/audit-log-row";
 import { ENTITY_LABELS } from "@/components/audit/entity-labels";
+import { QueryError } from "@/components/layout/query-error";
 
 const PAGE_SIZE = 25;
 const ALL_ENTITIES = "all";
@@ -92,7 +93,9 @@ export function AuditLogTable() {
         </div>
       </div>
 
-      {query.isLoading ? (
+      {query.isError ? (
+        <QueryError error={query.error} forbiddenMessage="Tu rol no tiene acceso a la auditoría." />
+      ) : query.isLoading ? (
         <Skeleton className="h-64 w-full" />
       ) : !data || data.items.length === 0 ? (
         <div className="text-muted-foreground flex flex-col items-center gap-2 rounded-xl border border-dashed py-16 text-center text-sm">

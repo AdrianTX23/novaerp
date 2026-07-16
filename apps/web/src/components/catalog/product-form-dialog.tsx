@@ -19,7 +19,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { FormField } from "@/components/auth/form-field";
 import { productFormSchema, type ProductFormInput, type ProductFormValues } from "@/lib/catalog-schemas";
 import { productsApi, categoriesApi } from "@/lib/catalog-api";
-import { ApiError } from "@/lib/api-client";
+import { toastApiError } from "@/lib/api-errors";
 import type { ProductSummary } from "@/lib/types";
 import { Plus, Pencil } from "lucide-react";
 
@@ -91,8 +91,7 @@ export function ProductFormDialog({ product }: { product?: ProductSummary }) {
       setOpen(false);
     },
     onError: (error) => {
-      const message = error instanceof ApiError ? error.problem.title : "No se pudo guardar el producto.";
-      toast.error(message);
+      toastApiError(error, "No se pudo guardar el producto.");
     },
   });
 

@@ -20,7 +20,7 @@ import { FormField } from "@/components/auth/form-field";
 import { createUserSchema, type CreateUserFormValues } from "@/lib/users-schemas";
 import { usersApi } from "@/lib/users-api";
 import { rolesApi } from "@/lib/roles-api";
-import { ApiError } from "@/lib/api-client";
+import { toastApiError } from "@/lib/api-errors";
 import { UserPlus } from "lucide-react";
 
 export function CreateUserDialog() {
@@ -50,8 +50,7 @@ export function CreateUserDialog() {
       setOpen(false);
     },
     onError: (error) => {
-      const message = error instanceof ApiError ? error.problem.title : "No se pudo crear el usuario.";
-      toast.error(message);
+      toastApiError(error, "No se pudo crear el usuario.");
     },
   });
 

@@ -14,10 +14,12 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
 import { purchasingApi } from "@/lib/purchasing-api";
-import { ApiError } from "@/lib/api-client";
+import { toastApiError } from "@/lib/api-errors";
 import type { PurchaseOrderStatus } from "@/lib/types";
 import { formatMoney } from "@/lib/utils";
 import { CreatePurchaseOrderDialog } from "@/components/purchasing/create-purchase-order-dialog";
+import { QueryError } from "@/components/layout/query-error";
+import { ConfirmButton } from "@/components/ui/confirm-button";
 
 const STATUS_META: Record<PurchaseOrderStatus, { label: string; variant: "secondary" | "default" | "destructive" }> = {
   Draft: { label: "Borrador", variant: "secondary" },
@@ -45,8 +47,7 @@ export function PurchaseOrdersTab() {
       toast.success("Orden confirmada. Stock ingresado al inventario.");
     },
     onError: (error) => {
-      const message = error instanceof ApiError ? error.problem.title : "No se pudo confirmar la orden.";
-      toast.error(message);
+      toastApiError(error, "No se pudo confirmar la orden.");
     },
   });
 
@@ -57,8 +58,7 @@ export function PurchaseOrdersTab() {
       toast.success("Orden cancelada.");
     },
     onError: (error) => {
-      const message = error instanceof ApiError ? error.problem.title : "No se pudo cancelar la orden.";
-      toast.error(message);
+      toastApiError(error, "No se pudo cancelar la orden.");
     },
   });
 
@@ -71,7 +71,9 @@ export function PurchaseOrdersTab() {
         <CreatePurchaseOrderDialog />
       </div>
 
-      {ordersQuery.isLoading ? (
+      {ordersQuery.isError ? (
+        <QueryError error={ordersQuery.error} forbiddenMessage="Tu rol no tiene acceso a las compras." />
+      ) : ordersQuery.isLoading ? (
         <Skeleton className="h-40 w-full" />
       ) : (
         <Table>
@@ -114,14 +116,15 @@ export function PurchaseOrdersTab() {
                         </Button>
                       )}
                       {order.status !== "Cancelled" && (
-                        <Button
-                          size="sm"
-                          variant="outline"
+                        <ConfirmButton
+                          confirmLabel="Sí, cancelar"
+                          pendingLabel="Cancelando…"
+                          pending={cancelOrder.isPending}
                           disabled={busy}
-                          onClick={() => cancelOrder.mutate(order.id)}
+                          onConfirm={() => cancelOrder.mutate(order.id)}
                         >
                           Cancelar
-                        </Button>
+                        </ConfirmButton>
                       )}
                     </div>
                   </TableCell>

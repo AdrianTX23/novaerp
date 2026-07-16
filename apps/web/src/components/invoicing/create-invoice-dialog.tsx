@@ -20,7 +20,7 @@ import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { salesApi } from "@/lib/sales-api";
 import { invoicingApi } from "@/lib/invoicing-api";
-import { ApiError } from "@/lib/api-client";
+import { toastApiError } from "@/lib/api-errors";
 import { formatMoney } from "@/lib/utils";
 
 interface FormValues {
@@ -57,8 +57,7 @@ export function CreateInvoiceDialog() {
       setOpen(false);
     },
     onError: (error) => {
-      const message = error instanceof ApiError ? error.problem.title : "No se pudo emitir la factura.";
-      toast.error(message);
+      toastApiError(error, "No se pudo emitir la factura.");
     },
   });
 

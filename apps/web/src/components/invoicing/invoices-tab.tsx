@@ -12,15 +12,16 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { Badge } from "@/components/ui/badge";
-import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
 import { invoicingApi } from "@/lib/invoicing-api";
 import { ApiError } from "@/lib/api-client";
+import { toastApiError } from "@/lib/api-errors";
 import type { InvoiceStatus } from "@/lib/types";
 import { formatMoney } from "@/lib/utils";
 import { CreateInvoiceDialog } from "@/components/invoicing/create-invoice-dialog";
 import { RegisterPaymentDialog } from "@/components/invoicing/register-payment-dialog";
 import { TablePagination } from "@/components/ui/table-pagination";
+import { ConfirmButton } from "@/components/ui/confirm-button";
 
 const STATUS_META: Record<InvoiceStatus, { label: string; variant: "secondary" | "default" | "outline" | "destructive" }> = {
   Issued: { label: "Emitida", variant: "outline" },
@@ -50,8 +51,7 @@ export function InvoicesTab() {
       toast.success("Factura anulada.");
     },
     onError: (error) => {
-      const message = error instanceof ApiError ? error.problem.title : "No se pudo anular la factura.";
-      toast.error(message);
+      toastApiError(error, "No se pudo anular la factura.");
     },
   });
 
@@ -104,14 +104,14 @@ export function InvoicesTab() {
                     <div className="flex justify-end gap-2">
                       {canPay && <RegisterPaymentDialog invoice={invoice} />}
                       {canVoid && (
-                        <Button
-                          size="sm"
-                          variant="outline"
-                          disabled={voidInvoice.isPending}
-                          onClick={() => voidInvoice.mutate(invoice.id)}
+                        <ConfirmButton
+                          confirmLabel="Sí, anular"
+                          pendingLabel="Anulando…"
+                          pending={voidInvoice.isPending}
+                          onConfirm={() => voidInvoice.mutate(invoice.id)}
                         >
                           Anular
-                        </Button>
+                        </ConfirmButton>
                       )}
                     </div>
                   </TableCell>

@@ -16,7 +16,7 @@ import {
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { productsApi } from "@/lib/catalog-api";
-import { ApiError } from "@/lib/api-client";
+import { toastApiError } from "@/lib/api-errors";
 import type { ProductSummary } from "@/lib/types";
 import { PackagePlus } from "lucide-react";
 
@@ -34,8 +34,7 @@ export function AdjustStockDialog({ product }: { product: ProductSummary }) {
       setDelta("");
     },
     onError: (error) => {
-      const message = error instanceof ApiError ? error.problem.title : "No se pudo ajustar el stock.";
-      toast.error(message);
+      toastApiError(error, "No se pudo ajustar el stock.");
     },
   });
 

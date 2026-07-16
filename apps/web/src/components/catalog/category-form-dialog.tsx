@@ -18,7 +18,7 @@ import {
 import { FormField } from "@/components/auth/form-field";
 import { categoryFormSchema, type CategoryFormValues } from "@/lib/catalog-schemas";
 import { categoriesApi } from "@/lib/catalog-api";
-import { ApiError } from "@/lib/api-client";
+import { toastApiError } from "@/lib/api-errors";
 import type { CategoryDto } from "@/lib/types";
 import { Plus, Pencil } from "lucide-react";
 
@@ -48,8 +48,7 @@ export function CategoryFormDialog({ category }: { category?: CategoryDto }) {
       setOpen(false);
     },
     onError: (error) => {
-      const message = error instanceof ApiError ? error.problem.title : "No se pudo guardar la categoría.";
-      toast.error(message);
+      toastApiError(error, "No se pudo guardar la categoría.");
     },
   });
 

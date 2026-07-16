@@ -14,6 +14,7 @@ import {
 import { Skeleton } from "@/components/ui/skeleton";
 import { accountingApi } from "@/lib/accounting-api";
 import { formatMoney } from "@/lib/utils";
+import { QueryError } from "@/components/layout/query-error";
 
 export function TrialBalanceTab() {
   const balanceQuery = useQuery({
@@ -22,6 +23,9 @@ export function TrialBalanceTab() {
   });
   const data = balanceQuery.data;
 
+  if (balanceQuery.isError) {
+    return <QueryError error={balanceQuery.error} forbiddenMessage="Tu rol no tiene acceso a la contabilidad." />;
+  }
   if (balanceQuery.isLoading) {
     return <Skeleton className="h-40 w-full" />;
   }

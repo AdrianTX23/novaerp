@@ -12,12 +12,13 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { Badge } from "@/components/ui/badge";
-import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
 import { cashApi } from "@/lib/cash-api";
 import { ApiError } from "@/lib/api-client";
+import { toastApiError } from "@/lib/api-errors";
 import { formatMoney, cn } from "@/lib/utils";
 import { CreateCashMovementDialog } from "@/components/cash/create-cash-movement-dialog";
+import { ConfirmButton } from "@/components/ui/confirm-button";
 
 export function CashView() {
   const queryClient = useQueryClient();
@@ -35,8 +36,7 @@ export function CashView() {
       toast.success("Movimiento eliminado.");
     },
     onError: (error) => {
-      const message = error instanceof ApiError ? error.problem.title : "No se pudo eliminar el movimiento.";
-      toast.error(message);
+      toastApiError(error, "No se pudo eliminar el movimiento.");
     },
   });
 
@@ -131,15 +131,17 @@ export function CashView() {
                     </TableCell>
                     <TableCell>
                       {m.canDelete && (
-                        <Button
+                        <ConfirmButton
                           variant="ghost"
                           size="icon-sm"
-                          disabled={deleteMovement.isPending}
-                          onClick={() => deleteMovement.mutate(m.id)}
+                          confirmLabel="Sí, eliminar"
+                          pendingLabel="Eliminando…"
+                          pending={deleteMovement.isPending}
+                          onConfirm={() => deleteMovement.mutate(m.id)}
                           aria-label="Eliminar movimiento"
                         >
                           <Trash2 />
-                        </Button>
+                        </ConfirmButton>
                       )}
                     </TableCell>
                   </TableRow>

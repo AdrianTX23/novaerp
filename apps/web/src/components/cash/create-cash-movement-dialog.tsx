@@ -19,7 +19,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { cashApi } from "@/lib/cash-api";
-import { ApiError } from "@/lib/api-client";
+import { toastApiError } from "@/lib/api-errors";
 import { CashMovementType } from "@/lib/types";
 
 interface FormValues {
@@ -55,12 +55,7 @@ export function CreateCashMovementDialog() {
       setOpen(false);
     },
     onError: (error) => {
-      if (error instanceof ApiError && error.problem.errors?.length) {
-        error.problem.errors.forEach((e) => toast.error(e.error));
-        return;
-      }
-      const message = error instanceof ApiError ? error.problem.title : "No se pudo registrar el movimiento.";
-      toast.error(message);
+      toastApiError(error, "No se pudo registrar el movimiento.");
     },
   });
 

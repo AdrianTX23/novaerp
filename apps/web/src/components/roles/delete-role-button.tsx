@@ -5,7 +5,7 @@ import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import { rolesApi } from "@/lib/roles-api";
-import { ApiError } from "@/lib/api-client";
+import { toastApiError } from "@/lib/api-errors";
 import { Trash2 } from "lucide-react";
 
 export function DeleteRoleButton({ roleId }: { roleId: string }) {
@@ -19,8 +19,7 @@ export function DeleteRoleButton({ roleId }: { roleId: string }) {
       toast.success("Rol eliminado.");
     },
     onError: (error) => {
-      const message = error instanceof ApiError ? error.problem.title : "No se pudo eliminar el rol.";
-      toast.error(message);
+      toastApiError(error, "No se pudo eliminar el rol.");
       setConfirming(false);
     },
   });

@@ -19,7 +19,7 @@ import { Checkbox } from "@/components/ui/checkbox";
 import { FormField } from "@/components/auth/form-field";
 import { partnerFormSchema, type PartnerFormValues } from "@/lib/partners-schemas";
 import { partnersApi } from "@/lib/partners-api";
-import { ApiError } from "@/lib/api-client";
+import { toastApiError } from "@/lib/api-errors";
 import { PartnerType, type PartnerDto } from "@/lib/types";
 import { Plus, Pencil } from "lucide-react";
 
@@ -71,8 +71,7 @@ export function PartnerFormDialog({
       setOpen(false);
     },
     onError: (error) => {
-      const message = error instanceof ApiError ? error.problem.title : "No se pudo guardar el contacto.";
-      toast.error(message);
+      toastApiError(error, "No se pudo guardar el contacto.");
     },
   });
 

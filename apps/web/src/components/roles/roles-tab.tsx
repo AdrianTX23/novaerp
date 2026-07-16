@@ -14,6 +14,7 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { rolesApi } from "@/lib/roles-api";
 import { RoleFormDialog } from "@/components/roles/role-form-dialog";
 import { DeleteRoleButton } from "@/components/roles/delete-role-button";
+import { QueryError } from "@/components/layout/query-error";
 
 export function RolesTab() {
   const rolesQuery = useQuery({ queryKey: ["roles"], queryFn: rolesApi.list });
@@ -27,7 +28,9 @@ export function RolesTab() {
         <RoleFormDialog />
       </div>
 
-      {rolesQuery.isLoading ? (
+      {rolesQuery.isError ? (
+        <QueryError error={rolesQuery.error} forbiddenMessage="Tu rol no tiene acceso a los roles." />
+      ) : rolesQuery.isLoading ? (
         <Skeleton className="h-40 w-full" />
       ) : (
         <Table>

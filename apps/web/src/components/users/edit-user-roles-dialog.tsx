@@ -16,7 +16,7 @@ import {
 import { Checkbox } from "@/components/ui/checkbox";
 import { usersApi } from "@/lib/users-api";
 import { rolesApi } from "@/lib/roles-api";
-import { ApiError } from "@/lib/api-client";
+import { toastApiError } from "@/lib/api-errors";
 import type { UserSummary } from "@/lib/types";
 import { Pencil } from "lucide-react";
 
@@ -36,8 +36,7 @@ export function EditUserRolesDialog({ user }: { user: UserSummary }) {
       setOpen(false);
     },
     onError: (error) => {
-      const message = error instanceof ApiError ? error.problem.title : "No se pudieron actualizar los roles.";
-      toast.error(message);
+      toastApiError(error, "No se pudieron actualizar los roles.");
     },
   });
 

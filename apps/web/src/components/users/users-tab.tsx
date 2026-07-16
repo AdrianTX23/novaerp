@@ -1,7 +1,6 @@
 "use client";
 
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import { toast } from "sonner";
 import {
   Table,
   TableBody,
@@ -14,10 +13,11 @@ import { Badge } from "@/components/ui/badge";
 import { Switch } from "@/components/ui/switch";
 import { Skeleton } from "@/components/ui/skeleton";
 import { usersApi } from "@/lib/users-api";
-import { ApiError } from "@/lib/api-client";
+import { toastApiError } from "@/lib/api-errors";
 import { useAuthStore } from "@/stores/auth-store";
 import { CreateUserDialog } from "@/components/users/create-user-dialog";
 import { EditUserRolesDialog } from "@/components/users/edit-user-roles-dialog";
+import { QueryError } from "@/components/layout/query-error";
 
 export function UsersTab() {
   const currentUserId = useAuthStore((s) => s.user?.id);
@@ -29,8 +29,7 @@ export function UsersTab() {
       vars.isActive ? usersApi.reactivate(vars.userId) : usersApi.deactivate(vars.userId),
     onSuccess: () => queryClient.invalidateQueries({ queryKey: ["users"] }),
     onError: (error) => {
-      const message = error instanceof ApiError ? error.problem.title : "No se pudo actualizar el estado.";
-      toast.error(message);
+      toastApiError(error, "No se pudo actualizar el estado.");
     },
   });
 
@@ -43,7 +42,9 @@ export function UsersTab() {
         <CreateUserDialog />
       </div>
 
-      {usersQuery.isLoading ? (
+      {usersQuery.isError ? (
+        <QueryError error={usersQuery.error} forbiddenMessage="Tu rol no tiene acceso a la gestión de usuarios." />
+      ) : usersQuery.isLoading ? (
         <Skeleton className="h-40 w-full" />
       ) : (
         <Table>

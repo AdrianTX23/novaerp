@@ -2,7 +2,6 @@
 
 import { useState } from "react";
 import { keepPreviousData, useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import { toast } from "sonner";
 import {
   Table,
   TableBody,
@@ -15,10 +14,11 @@ import { Badge } from "@/components/ui/badge";
 import { Switch } from "@/components/ui/switch";
 import { Skeleton } from "@/components/ui/skeleton";
 import { partnersApi } from "@/lib/partners-api";
-import { ApiError } from "@/lib/api-client";
+import { toastApiError } from "@/lib/api-errors";
 import { PartnerType } from "@/lib/types";
 import { PartnerFormDialog } from "@/components/partners/partner-form-dialog";
 import { TablePagination } from "@/components/ui/table-pagination";
+import { QueryError } from "@/components/layout/query-error";
 
 const PAGE_SIZE = 50;
 
@@ -36,8 +36,7 @@ export function PartnersTab({ type }: { type: number }) {
       vars.isActive ? partnersApi.reactivate(vars.partnerId) : partnersApi.deactivate(vars.partnerId),
     onSuccess: () => queryClient.invalidateQueries({ queryKey: ["partners"] }),
     onError: (error) => {
-      const message = error instanceof ApiError ? error.problem.title : "No se pudo actualizar el estado.";
-      toast.error(message);
+      toastApiError(error, "No se pudo actualizar el estado.");
     },
   });
 
@@ -48,7 +47,9 @@ export function PartnersTab({ type }: { type: number }) {
         <PartnerFormDialog defaultType={type} />
       </div>
 
-      {partnersQuery.isLoading ? (
+      {partnersQuery.isError ? (
+        <QueryError error={partnersQuery.error} forbiddenMessage="Tu rol no tiene acceso a los contactos." />
+      ) : partnersQuery.isLoading ? (
         <Skeleton className="h-40 w-full" />
       ) : (
         <Table>

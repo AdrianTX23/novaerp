@@ -13,6 +13,7 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { accountingApi } from "@/lib/accounting-api";
 import { formatMoney } from "@/lib/utils";
 import { CreateJournalEntryDialog } from "@/components/accounting/create-journal-entry-dialog";
+import { QueryError } from "@/components/layout/query-error";
 
 export function JournalEntriesTab() {
   const entriesQuery = useQuery({
@@ -27,7 +28,9 @@ export function JournalEntriesTab() {
         <CreateJournalEntryDialog />
       </div>
 
-      {entriesQuery.isLoading ? (
+      {entriesQuery.isError ? (
+        <QueryError error={entriesQuery.error} forbiddenMessage="Tu rol no tiene acceso a la contabilidad." />
+      ) : entriesQuery.isLoading ? (
         <Skeleton className="h-40 w-full" />
       ) : (
         <Table>

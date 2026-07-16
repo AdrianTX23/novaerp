@@ -15,7 +15,7 @@ import {
 import { Skeleton } from "@/components/ui/skeleton";
 import { FormField } from "@/components/auth/form-field";
 import { settingsApi } from "@/lib/settings-api";
-import { ApiError } from "@/lib/api-client";
+import { toastApiError } from "@/lib/api-errors";
 import { useAuthStore } from "@/stores/auth-store";
 
 export function CompanySettings() {
@@ -40,13 +40,7 @@ export function CompanySettings() {
       toast.success("Nombre de la empresa actualizado.");
     },
     onError: (error) => {
-      if (error instanceof ApiError && error.problem.errors?.length) {
-        error.problem.errors.forEach((e) => toast.error(e.error));
-        return;
-      }
-      const message =
-        error instanceof ApiError ? error.problem.title : "No se pudo actualizar la empresa.";
-      toast.error(message);
+      toastApiError(error, "No se pudo actualizar la empresa.");
     },
   });
 

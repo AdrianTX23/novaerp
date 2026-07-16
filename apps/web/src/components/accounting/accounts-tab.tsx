@@ -14,6 +14,7 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { accountingApi } from "@/lib/accounting-api";
 import { ACCOUNT_TYPE_LABEL } from "@/components/accounting/account-type-label";
 import { AccountFormDialog } from "@/components/accounting/account-form-dialog";
+import { QueryError } from "@/components/layout/query-error";
 
 export function AccountsTab() {
   const accountsQuery = useQuery({ queryKey: ["accounting", "accounts"], queryFn: accountingApi.accounts });
@@ -25,7 +26,9 @@ export function AccountsTab() {
         <AccountFormDialog />
       </div>
 
-      {accountsQuery.isLoading ? (
+      {accountsQuery.isError ? (
+        <QueryError error={accountsQuery.error} forbiddenMessage="Tu rol no tiene acceso a la contabilidad." />
+      ) : accountsQuery.isLoading ? (
         <Skeleton className="h-40 w-full" />
       ) : (
         <Table>
