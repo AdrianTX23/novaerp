@@ -15,7 +15,7 @@ public sealed class GetDashboardQueryHandlerTests
     private async Task<Guid> ConfirmedSaleAsync(
         NovaERP.Infrastructure.Persistence.NovaErpDbContext db, Guid customerId, Guid productId, decimal qty)
     {
-        var create = new CreateSalesOrderCommandHandler(db, new FakeTenantProvider(_tenantId));
+        var create = new CreateSalesOrderCommandHandler(db, new FakeTenantProvider(_tenantId), new FakeDocumentSequenceService());
         var order = await create.Handle(
             new CreateSalesOrderCommand(customerId, DateOnly.FromDateTime(DateTime.UtcNow), null,
                 [new CreateSalesOrderLineInput(productId, qty)]),
@@ -44,7 +44,7 @@ public sealed class GetDashboardQueryHandlerTests
         await ConfirmedSaleAsync(db, globex.Id, laptop.Id, 1); // 900
 
         // Un borrador (no confirmado) que NO debe contar.
-        var create = new CreateSalesOrderCommandHandler(db, new FakeTenantProvider(_tenantId));
+        var create = new CreateSalesOrderCommandHandler(db, new FakeTenantProvider(_tenantId), new FakeDocumentSequenceService());
         await create.Handle(
             new CreateSalesOrderCommand(globex.Id, DateOnly.FromDateTime(DateTime.UtcNow), null,
                 [new CreateSalesOrderLineInput(mouse.Id, 5)]),

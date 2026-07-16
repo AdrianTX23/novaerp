@@ -1,6 +1,7 @@
 "use client";
 
-import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import { useState } from "react";
+import { keepPreviousData, useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { toast } from "sonner";
 import {
   Table,
@@ -17,12 +18,17 @@ import { partnersApi } from "@/lib/partners-api";
 import { ApiError } from "@/lib/api-client";
 import { PartnerType } from "@/lib/types";
 import { PartnerFormDialog } from "@/components/partners/partner-form-dialog";
+import { TablePagination } from "@/components/ui/table-pagination";
+
+const PAGE_SIZE = 50;
 
 export function PartnersTab({ type }: { type: number }) {
+  const [page, setPage] = useState(1);
   const queryClient = useQueryClient();
   const partnersQuery = useQuery({
-    queryKey: ["partners", type],
-    queryFn: () => partnersApi.list(type),
+    queryKey: ["partners", type, page],
+    queryFn: () => partnersApi.list({ type, page, pageSize: PAGE_SIZE }),
+    placeholderData: keepPreviousData,
   });
 
   const toggleActive = useMutation({
@@ -38,7 +44,7 @@ export function PartnersTab({ type }: { type: number }) {
   return (
     <div className="grid gap-4">
       <div className="flex items-center justify-between">
-        <p className="text-muted-foreground text-sm">{partnersQuery.data?.length ?? 0} contactos.</p>
+        <p className="text-muted-foreground text-sm">{partnersQuery.data?.totalCount ?? 0} contactos.</p>
         <PartnerFormDialog defaultType={type} />
       </div>
 
@@ -56,7 +62,7 @@ export function PartnersTab({ type }: { type: number }) {
             </TableRow>
           </TableHeader>
           <TableBody>
-            {partnersQuery.data?.map((partner) => (
+            {partnersQuery.data?.items.map((partner) => (
               <TableRow key={partner.id}>
                 <TableCell className="font-medium">
                   {partner.name}
@@ -87,7 +93,7 @@ export function PartnersTab({ type }: { type: number }) {
                 </TableCell>
               </TableRow>
             ))}
-            {partnersQuery.data?.length === 0 && (
+            {partnersQuery.data?.items.length === 0 && (
               <TableRow>
                 <TableCell colSpan={5} className="text-muted-foreground text-center">
                   Todavía no hay contactos de este tipo.
@@ -96,6 +102,15 @@ export function PartnersTab({ type }: { type: number }) {
             )}
           </TableBody>
         </Table>
+      )}
+
+      {partnersQuery.data && (
+        <TablePagination
+          page={page}
+          pageSize={PAGE_SIZE}
+          totalCount={partnersQuery.data.totalCount}
+          onPageChange={setPage}
+        />
       )}
     </div>
   );

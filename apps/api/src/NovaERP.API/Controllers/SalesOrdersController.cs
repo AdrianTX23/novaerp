@@ -2,6 +2,7 @@ using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using NovaERP.API.Contracts;
+using NovaERP.Application.Common;
 using NovaERP.Application.Features.Sales.CancelSalesOrder;
 using NovaERP.Application.Features.Sales.Common;
 using NovaERP.Application.Features.Sales.ConfirmSalesOrder;
@@ -19,10 +20,12 @@ public sealed class SalesOrdersController(IMediator mediator) : ControllerBase
 {
     [HttpGet]
     [Authorize(Roles = Permissions.SalesRead)]
-    public async Task<ActionResult<List<SalesOrderSummary>>> List(
-        [FromQuery] string? status, [FromQuery] Guid? customerId, CancellationToken ct)
+    public async Task<ActionResult<PagedResult<SalesOrderSummary>>> List(
+        [FromQuery] string? status, [FromQuery] Guid? customerId,
+        [FromQuery] int page = 1, [FromQuery] int pageSize = 50, CancellationToken ct = default)
     {
-        return Ok(await mediator.Send(new ListSalesOrdersQuery(status, customerId), ct));
+        var query = new ListSalesOrdersQuery(status, customerId, Math.Max(page, 1), Math.Clamp(pageSize, 1, 100));
+        return Ok(await mediator.Send(query, ct));
     }
 
     [HttpGet("{orderId:guid}")]

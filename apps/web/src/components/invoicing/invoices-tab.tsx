@@ -1,6 +1,7 @@
 "use client";
 
-import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import { useState } from "react";
+import { keepPreviousData, useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { toast } from "sonner";
 import {
   Table,
@@ -19,6 +20,7 @@ import type { InvoiceStatus } from "@/lib/types";
 import { formatMoney } from "@/lib/utils";
 import { CreateInvoiceDialog } from "@/components/invoicing/create-invoice-dialog";
 import { RegisterPaymentDialog } from "@/components/invoicing/register-payment-dialog";
+import { TablePagination } from "@/components/ui/table-pagination";
 
 const STATUS_META: Record<InvoiceStatus, { label: string; variant: "secondary" | "default" | "outline" | "destructive" }> = {
   Issued: { label: "Emitida", variant: "outline" },
@@ -27,12 +29,16 @@ const STATUS_META: Record<InvoiceStatus, { label: string; variant: "secondary" |
   Void: { label: "Anulada", variant: "destructive" },
 };
 
+const PAGE_SIZE = 50;
+
 export function InvoicesTab() {
+  const [page, setPage] = useState(1);
   const queryClient = useQueryClient();
   const invoicesQuery = useQuery({
-    queryKey: ["invoices"],
-    queryFn: () => invoicingApi.list(),
+    queryKey: ["invoices", page],
+    queryFn: () => invoicingApi.list({ page, pageSize: PAGE_SIZE }),
     retry: false,
+    placeholderData: keepPreviousData,
   });
 
   const forbidden = invoicesQuery.error instanceof ApiError && invoicesQuery.error.status === 403;
@@ -52,7 +58,7 @@ export function InvoicesTab() {
   return (
     <div className="grid gap-4">
       <div className="flex items-center justify-between">
-        <p className="text-muted-foreground text-sm">{invoicesQuery.data?.length ?? 0} facturas.</p>
+        <p className="text-muted-foreground text-sm">{invoicesQuery.data?.totalCount ?? 0} facturas.</p>
         <CreateInvoiceDialog />
       </div>
 
@@ -77,7 +83,7 @@ export function InvoicesTab() {
             </TableRow>
           </TableHeader>
           <TableBody>
-            {invoicesQuery.data?.map((invoice) => {
+            {invoicesQuery.data?.items.map((invoice) => {
               const meta = STATUS_META[invoice.status];
               const canPay = invoice.status === "Issued" || invoice.status === "PartiallyPaid";
               const canVoid = invoice.status === "Issued" && invoice.amountPaid === 0;
@@ -112,7 +118,7 @@ export function InvoicesTab() {
                 </TableRow>
               );
             })}
-            {invoicesQuery.data?.length === 0 && (
+            {invoicesQuery.data?.items.length === 0 && (
               <TableRow>
                 <TableCell colSpan={8} className="text-muted-foreground text-center">
                   Todavía no hay facturas. Emite una desde un pedido de venta confirmado.
@@ -121,6 +127,15 @@ export function InvoicesTab() {
             )}
           </TableBody>
         </Table>
+      )}
+
+      {!forbidden && invoicesQuery.data && (
+        <TablePagination
+          page={page}
+          pageSize={PAGE_SIZE}
+          totalCount={invoicesQuery.data.totalCount}
+          onPageChange={setPage}
+        />
       )}
     </div>
   );

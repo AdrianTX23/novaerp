@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import { keepPreviousData, useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { toast } from "sonner";
 import {
   Table,
@@ -20,16 +20,21 @@ import { productsApi } from "@/lib/catalog-api";
 import { ApiError } from "@/lib/api-client";
 import { ProductFormDialog } from "@/components/catalog/product-form-dialog";
 import { AdjustStockDialog } from "@/components/catalog/adjust-stock-dialog";
+import { TablePagination } from "@/components/ui/table-pagination";
 import { AlertTriangle } from "lucide-react";
+
+const PAGE_SIZE = 50;
 
 export function ProductsTab() {
   const [search, setSearch] = useState("");
   const [lowStockOnly, setLowStockOnly] = useState(false);
+  const [page, setPage] = useState(1);
   const queryClient = useQueryClient();
 
   const productsQuery = useQuery({
-    queryKey: ["products", { search, lowStockOnly }],
-    queryFn: () => productsApi.list({ search: search || undefined, lowStockOnly }),
+    queryKey: ["products", { search, lowStockOnly, page }],
+    queryFn: () => productsApi.list({ search: search || undefined, lowStockOnly, page, pageSize: PAGE_SIZE }),
+    placeholderData: keepPreviousData,
   });
 
   const toggleActive = useMutation({
@@ -49,13 +54,19 @@ export function ProductsTab() {
           <Input
             placeholder="Buscar por nombre o SKU…"
             value={search}
-            onChange={(e) => setSearch(e.target.value)}
+            onChange={(e) => {
+              setSearch(e.target.value);
+              setPage(1);
+            }}
             className="w-56"
           />
           <Button
             variant={lowStockOnly ? "default" : "outline"}
             size="sm"
-            onClick={() => setLowStockOnly((v) => !v)}
+            onClick={() => {
+              setLowStockOnly((v) => !v);
+              setPage(1);
+            }}
           >
             <AlertTriangle />
             Bajo stock
@@ -79,7 +90,7 @@ export function ProductsTab() {
             </TableRow>
           </TableHeader>
           <TableBody>
-            {productsQuery.data?.map((product) => (
+            {productsQuery.data?.items.map((product) => (
               <TableRow key={product.id}>
                 <TableCell className="font-medium">
                   {product.name}
@@ -112,7 +123,7 @@ export function ProductsTab() {
                 </TableCell>
               </TableRow>
             ))}
-            {productsQuery.data?.length === 0 && (
+            {productsQuery.data?.items.length === 0 && (
               <TableRow>
                 <TableCell colSpan={6} className="text-muted-foreground text-center">
                   No hay productos que coincidan.
@@ -121,6 +132,15 @@ export function ProductsTab() {
             )}
           </TableBody>
         </Table>
+      )}
+
+      {productsQuery.data && (
+        <TablePagination
+          page={page}
+          pageSize={PAGE_SIZE}
+          totalCount={productsQuery.data.totalCount}
+          onPageChange={setPage}
+        />
       )}
     </div>
   );

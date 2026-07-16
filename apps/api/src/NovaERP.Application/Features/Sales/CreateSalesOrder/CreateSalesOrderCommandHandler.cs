@@ -8,7 +8,8 @@ using NovaERP.Domain.Sales;
 
 namespace NovaERP.Application.Features.Sales.CreateSalesOrder;
 
-public sealed class CreateSalesOrderCommandHandler(IApplicationDbContext db, ITenantProvider tenantProvider)
+public sealed class CreateSalesOrderCommandHandler(
+    IApplicationDbContext db, ITenantProvider tenantProvider, IDocumentSequenceService sequences)
     : IRequestHandler<CreateSalesOrderCommand, SalesOrderDetail>
 {
     public async Task<SalesOrderDetail> Handle(CreateSalesOrderCommand request, CancellationToken ct)
@@ -60,15 +61,10 @@ public sealed class CreateSalesOrderCommandHandler(IApplicationDbContext db, ITe
         return await SalesOrderDetailFactory.CreateAsync(db, order, ct);
     }
 
-    /// <summary>
-    /// Numeración correlativa por empresa (SO-00001). Cuenta todos los pedidos del
-    /// tenant —incluidos cancelados, que conservan su fila— para no reutilizar
-    /// números. Hay una ventana de carrera mínima bajo alta concurrencia que en
-    /// producción se cerraría con una secuencia de Postgres o un advisory lock.
-    /// </summary>
+    /// <summary>Numeración correlativa por empresa (SO-00001), atómica vía IDocumentSequenceService.</summary>
     private async Task<string> GenerateOrderNumberAsync(CancellationToken ct)
     {
-        var count = await db.SalesOrders.CountAsync(ct);
-        return $"SO-{count + 1:D5}";
+        var next = await sequences.NextAsync(tenantProvider.TenantId, "SalesOrder", ct);
+        return $"SO-{next:D5}";
     }
 }

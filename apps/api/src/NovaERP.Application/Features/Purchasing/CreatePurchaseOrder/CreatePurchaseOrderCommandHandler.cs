@@ -8,7 +8,8 @@ using NovaERP.Domain.Purchasing;
 
 namespace NovaERP.Application.Features.Purchasing.CreatePurchaseOrder;
 
-public sealed class CreatePurchaseOrderCommandHandler(IApplicationDbContext db, ITenantProvider tenantProvider)
+public sealed class CreatePurchaseOrderCommandHandler(
+    IApplicationDbContext db, ITenantProvider tenantProvider, IDocumentSequenceService sequences)
     : IRequestHandler<CreatePurchaseOrderCommand, PurchaseOrderDetail>
 {
     public async Task<PurchaseOrderDetail> Handle(CreatePurchaseOrderCommand request, CancellationToken ct)
@@ -59,10 +60,10 @@ public sealed class CreatePurchaseOrderCommandHandler(IApplicationDbContext db, 
         return await PurchaseOrderDetailFactory.CreateAsync(db, order, ct);
     }
 
-    /// <summary>Numeración correlativa por empresa (PO-00001); ver la nota de concurrencia en Ventas.</summary>
+    /// <summary>Numeración correlativa por empresa (PO-00001), atómica vía IDocumentSequenceService.</summary>
     private async Task<string> GenerateOrderNumberAsync(CancellationToken ct)
     {
-        var count = await db.PurchaseOrders.CountAsync(ct);
-        return $"PO-{count + 1:D5}";
+        var next = await sequences.NextAsync(tenantProvider.TenantId, "PurchaseOrder", ct);
+        return $"PO-{next:D5}";
     }
 }

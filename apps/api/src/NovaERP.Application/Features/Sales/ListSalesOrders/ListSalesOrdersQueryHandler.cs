@@ -1,5 +1,6 @@
 using MediatR;
 using Microsoft.EntityFrameworkCore;
+using NovaERP.Application.Common;
 using NovaERP.Application.Common.Interfaces;
 using NovaERP.Application.Features.Sales.Common;
 using NovaERP.Domain.Sales;
@@ -7,9 +8,9 @@ using NovaERP.Domain.Sales;
 namespace NovaERP.Application.Features.Sales.ListSalesOrders;
 
 public sealed class ListSalesOrdersQueryHandler(IApplicationDbContext db)
-    : IRequestHandler<ListSalesOrdersQuery, List<SalesOrderSummary>>
+    : IRequestHandler<ListSalesOrdersQuery, PagedResult<SalesOrderSummary>>
 {
-    public async Task<List<SalesOrderSummary>> Handle(ListSalesOrdersQuery request, CancellationToken ct)
+    public async Task<PagedResult<SalesOrderSummary>> Handle(ListSalesOrdersQuery request, CancellationToken ct)
     {
         var query = db.SalesOrders.AsQueryable();
 
@@ -24,10 +25,14 @@ public sealed class ListSalesOrdersQueryHandler(IApplicationDbContext db)
             query = query.Where(o => o.Status == status);
         }
 
+        var totalCount = await query.CountAsync(ct);
+
         // Join contra Partners para el nombre del cliente; una sola consulta.
-        return await query
+        var items = await query
             .OrderByDescending(o => o.OrderDate)
             .ThenByDescending(o => o.OrderNumber)
+            .Skip((request.Page - 1) * request.PageSize)
+            .Take(request.PageSize)
             .Select(o => new SalesOrderSummary(
                 o.Id,
                 o.OrderNumber,
@@ -38,5 +43,7 @@ public sealed class ListSalesOrdersQueryHandler(IApplicationDbContext db)
                 o.TotalAmount,
                 o.Lines.Count))
             .ToListAsync(ct);
+
+        return new PagedResult<SalesOrderSummary>(items, totalCount);
     }
 }

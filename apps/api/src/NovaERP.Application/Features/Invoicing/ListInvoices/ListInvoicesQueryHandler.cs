@@ -1,5 +1,6 @@
 using MediatR;
 using Microsoft.EntityFrameworkCore;
+using NovaERP.Application.Common;
 using NovaERP.Application.Common.Interfaces;
 using NovaERP.Application.Features.Invoicing.Common;
 using NovaERP.Domain.Invoicing;
@@ -7,9 +8,9 @@ using NovaERP.Domain.Invoicing;
 namespace NovaERP.Application.Features.Invoicing.ListInvoices;
 
 public sealed class ListInvoicesQueryHandler(IApplicationDbContext db)
-    : IRequestHandler<ListInvoicesQuery, List<InvoiceSummary>>
+    : IRequestHandler<ListInvoicesQuery, PagedResult<InvoiceSummary>>
 {
-    public async Task<List<InvoiceSummary>> Handle(ListInvoicesQuery request, CancellationToken ct)
+    public async Task<PagedResult<InvoiceSummary>> Handle(ListInvoicesQuery request, CancellationToken ct)
     {
         var query = db.Invoices.AsQueryable();
 
@@ -24,9 +25,13 @@ public sealed class ListInvoicesQueryHandler(IApplicationDbContext db)
             query = query.Where(i => i.Status == status);
         }
 
-        return await query
+        var totalCount = await query.CountAsync(ct);
+
+        var items = await query
             .OrderByDescending(i => i.IssueDate)
             .ThenByDescending(i => i.InvoiceNumber)
+            .Skip((request.Page - 1) * request.PageSize)
+            .Take(request.PageSize)
             .Select(i => new InvoiceSummary(
                 i.Id,
                 i.InvoiceNumber,
@@ -39,5 +44,7 @@ public sealed class ListInvoicesQueryHandler(IApplicationDbContext db)
                 i.AmountPaid,
                 i.Total - i.AmountPaid))
             .ToListAsync(ct);
+
+        return new PagedResult<InvoiceSummary>(items, totalCount);
     }
 }

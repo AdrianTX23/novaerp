@@ -23,7 +23,7 @@ public sealed class ListProductsQueryHandlerTests
         var sut = new ListProductsQueryHandler(db);
         var result = await sut.Handle(new ListProductsQuery(LowStockOnly: true), CancellationToken.None);
 
-        result.Should().ContainSingle(p => p.Sku == "SKU-LOW");
+        result.Items.Should().ContainSingle(p => p.Sku == "SKU-LOW");
     }
 
     [Fact]
@@ -37,6 +37,6 @@ public sealed class ListProductsQueryHandlerTests
         var sut = new ListProductsQueryHandler(db);
         var result = await sut.Handle(new ListProductsQuery(Search: "agua"), CancellationToken.None);
 
-        result.Should().ContainSingle(p => p.Sku == "AGUA-500");
+        result.Items.Should().ContainSingle(p => p.Sku == "AGUA-500");
     }
 }

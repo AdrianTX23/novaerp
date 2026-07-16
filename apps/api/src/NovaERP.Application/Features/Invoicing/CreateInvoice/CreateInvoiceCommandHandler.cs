@@ -8,7 +8,8 @@ using NovaERP.Domain.Sales;
 
 namespace NovaERP.Application.Features.Invoicing.CreateInvoice;
 
-public sealed class CreateInvoiceCommandHandler(IApplicationDbContext db, ITenantProvider tenantProvider)
+public sealed class CreateInvoiceCommandHandler(
+    IApplicationDbContext db, ITenantProvider tenantProvider, IDocumentSequenceService sequences)
     : IRequestHandler<CreateInvoiceCommand, InvoiceDetail>
 {
     private const int DefaultPaymentTermDays = 30;
@@ -58,9 +59,10 @@ public sealed class CreateInvoiceCommandHandler(IApplicationDbContext db, ITenan
         return InvoiceMapper.ToDetail(invoice);
     }
 
+    /// <summary>Numeración correlativa por empresa (INV-00001), atómica vía IDocumentSequenceService.</summary>
     private async Task<string> GenerateInvoiceNumberAsync(CancellationToken ct)
     {
-        var count = await db.Invoices.CountAsync(ct);
-        return $"INV-{count + 1:D5}";
+        var next = await sequences.NextAsync(tenantProvider.TenantId, "Invoice", ct);
+        return $"INV-{next:D5}";
     }
 }

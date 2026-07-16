@@ -1,5 +1,5 @@
 import { apiClient } from "@/lib/api-client";
-import type { CategoryDto, ProductSummary } from "@/lib/types";
+import type { CategoryDto, PagedResult, ProductSummary } from "@/lib/types";
 
 export interface CategoryPayload {
   name: string;
@@ -10,6 +10,8 @@ export interface ProductFilters {
   search?: string;
   categoryId?: string;
   lowStockOnly?: boolean;
+  page?: number;
+  pageSize?: number;
 }
 
 export interface CreateProductPayload {
@@ -31,6 +33,8 @@ function buildQuery(filters: ProductFilters): string {
   if (filters.search) params.set("search", filters.search);
   if (filters.categoryId) params.set("categoryId", filters.categoryId);
   if (filters.lowStockOnly) params.set("lowStockOnly", "true");
+  if (filters.page) params.set("page", String(filters.page));
+  if (filters.pageSize) params.set("pageSize", String(filters.pageSize));
   const qs = params.toString();
   return qs ? `?${qs}` : "";
 }
@@ -45,7 +49,7 @@ export const categoriesApi = {
 
 export const productsApi = {
   list: (filters: ProductFilters = {}) =>
-    apiClient.get<ProductSummary[]>(`/api/products${buildQuery(filters)}`),
+    apiClient.get<PagedResult<ProductSummary>>(`/api/products${buildQuery(filters)}`),
   create: (payload: CreateProductPayload) => apiClient.post<ProductSummary>("/api/products", payload),
   update: (productId: string, payload: UpdateProductPayload) =>
     apiClient.put<ProductSummary>(`/api/products/${productId}`, payload),

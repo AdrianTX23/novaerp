@@ -17,7 +17,7 @@ public sealed class CreateSalesOrderCommandHandlerTests
         using var db = TestDbContextFactory.Create(_tenantId);
         var (customer, product) = await SalesTestData.SeedAsync(db, _tenantId, initialStock: 10, salePrice: 12.5m);
 
-        var sut = new CreateSalesOrderCommandHandler(db, new FakeTenantProvider(_tenantId));
+        var sut = new CreateSalesOrderCommandHandler(db, new FakeTenantProvider(_tenantId), new FakeDocumentSequenceService());
         var result = await sut.Handle(
             new CreateSalesOrderCommand(customer.Id, new DateOnly(2026, 7, 13), null,
                 [new CreateSalesOrderLineInput(product.Id, 3)]),
@@ -44,7 +44,7 @@ public sealed class CreateSalesOrderCommandHandlerTests
         db.Partners.Add(supplier);
         await db.SaveChangesAsync(CancellationToken.None);
 
-        var sut = new CreateSalesOrderCommandHandler(db, new FakeTenantProvider(_tenantId));
+        var sut = new CreateSalesOrderCommandHandler(db, new FakeTenantProvider(_tenantId), new FakeDocumentSequenceService());
         var act = () => sut.Handle(
             new CreateSalesOrderCommand(supplier.Id, new DateOnly(2026, 7, 13), null,
                 [new CreateSalesOrderLineInput(product.Id, 1)]),

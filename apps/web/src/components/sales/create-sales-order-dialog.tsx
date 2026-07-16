@@ -45,17 +45,17 @@ export function CreateSalesOrderDialog() {
 
   const customersQuery = useQuery({
     queryKey: ["partners", PartnerType.Customer],
-    queryFn: () => partnersApi.list(PartnerType.Customer),
+    queryFn: () => partnersApi.list({ type: PartnerType.Customer, pageSize: 100 }),
     enabled: open,
   });
   const productsQuery = useQuery({
     queryKey: ["products", {}],
-    queryFn: () => productsApi.list(),
+    queryFn: () => productsApi.list({ pageSize: 100 }),
     enabled: open,
   });
 
-  const activeCustomers = customersQuery.data?.filter((c) => c.isActive) ?? [];
-  const activeProducts = productsQuery.data?.filter((p) => p.isActive) ?? [];
+  const activeCustomers = customersQuery.data?.items.filter((c) => c.isActive) ?? [];
+  const activeProducts = productsQuery.data?.items.filter((p) => p.isActive) ?? [];
 
   const {
     register,

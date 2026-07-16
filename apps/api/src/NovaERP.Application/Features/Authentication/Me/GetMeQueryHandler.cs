@@ -16,7 +16,7 @@ public sealed class GetMeQueryHandler(
             ?? throw new UnauthorizedException("No autenticado.");
 
         // Request autenticado: el filtro global de tenant ya aísla al usuario.
-        var user = await db.Users.FirstOrDefaultAsync(u => u.Id == userId, ct)
+        var user = await db.Users.AsNoTracking().FirstOrDefaultAsync(u => u.Id == userId, ct)
             ?? throw new UnauthorizedException("Usuario no encontrado.");
 
         var (roles, permissions) = await PermissionLoader.LoadAsync(db, user.Id, ct);

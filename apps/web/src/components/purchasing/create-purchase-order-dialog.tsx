@@ -45,17 +45,17 @@ export function CreatePurchaseOrderDialog() {
 
   const suppliersQuery = useQuery({
     queryKey: ["partners", PartnerType.Supplier],
-    queryFn: () => partnersApi.list(PartnerType.Supplier),
+    queryFn: () => partnersApi.list({ type: PartnerType.Supplier, pageSize: 100 }),
     enabled: open,
   });
   const productsQuery = useQuery({
     queryKey: ["products", {}],
-    queryFn: () => productsApi.list(),
+    queryFn: () => productsApi.list({ pageSize: 100 }),
     enabled: open,
   });
 
-  const activeSuppliers = suppliersQuery.data?.filter((s) => s.isActive) ?? [];
-  const activeProducts = productsQuery.data?.filter((p) => p.isActive) ?? [];
+  const activeSuppliers = suppliersQuery.data?.items.filter((s) => s.isActive) ?? [];
+  const activeProducts = productsQuery.data?.items.filter((p) => p.isActive) ?? [];
 
   const {
     register,

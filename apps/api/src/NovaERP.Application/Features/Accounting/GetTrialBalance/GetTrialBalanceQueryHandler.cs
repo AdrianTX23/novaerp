@@ -16,7 +16,7 @@ public sealed class GetTrialBalanceQueryHandler(IApplicationDbContext db)
 {
     public async Task<TrialBalanceDto> Handle(GetTrialBalanceQuery request, CancellationToken ct)
     {
-        var accounts = await db.Accounts.OrderBy(a => a.Code).ToListAsync(ct);
+        var accounts = await db.Accounts.AsNoTracking().OrderBy(a => a.Code).ToListAsync(ct);
 
         // Líneas de los asientos del tenant, agrupadas en memoria (Npgsql no traduce
         // un GroupBy sobre un Contains de subquery).

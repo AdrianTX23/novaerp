@@ -38,10 +38,10 @@ export function CreateOpportunityDialog() {
 
   const customersQuery = useQuery({
     queryKey: ["partners", PartnerType.Customer],
-    queryFn: () => partnersApi.list(PartnerType.Customer),
+    queryFn: () => partnersApi.list({ type: PartnerType.Customer, pageSize: 100 }),
     enabled: open,
   });
-  const activeCustomers = customersQuery.data?.filter((c) => c.isActive) ?? [];
+  const activeCustomers = customersQuery.data?.items.filter((c) => c.isActive) ?? [];
 
   const { register, handleSubmit, control, reset } = useForm<FormValues>({
     defaultValues: { customerId: "", title: "", estimatedValue: 0, expectedCloseDate: "", notes: "" },

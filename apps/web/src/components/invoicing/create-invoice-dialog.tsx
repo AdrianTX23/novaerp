@@ -35,8 +35,9 @@ export function CreateInvoiceDialog() {
 
   const ordersQuery = useQuery({
     queryKey: ["sales-orders", "Confirmed"],
-    queryFn: () => salesApi.list({ status: "Confirmed" }),
+    queryFn: () => salesApi.list({ status: "Confirmed", pageSize: 100 }),
     enabled: open,
+    select: (data) => data.items,
   });
 
   const { register, handleSubmit, control, reset } = useForm<FormValues>({

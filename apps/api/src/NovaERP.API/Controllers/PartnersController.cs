@@ -2,6 +2,7 @@ using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using NovaERP.API.Contracts;
+using NovaERP.Application.Common;
 using NovaERP.Application.Features.Partners.Common;
 using NovaERP.Application.Features.Partners.CreatePartner;
 using NovaERP.Application.Features.Partners.ListPartners;
@@ -19,9 +20,11 @@ public sealed class PartnersController(IMediator mediator) : ControllerBase
 {
     [HttpGet]
     [Authorize(Roles = Permissions.PartnersRead)]
-    public async Task<ActionResult<List<PartnerDto>>> List([FromQuery] PartnerType? type, CancellationToken ct)
+    public async Task<ActionResult<PagedResult<PartnerDto>>> List(
+        [FromQuery] PartnerType? type, [FromQuery] int page = 1, [FromQuery] int pageSize = 50, CancellationToken ct = default)
     {
-        return Ok(await mediator.Send(new ListPartnersQuery(type), ct));
+        var query = new ListPartnersQuery(type, Math.Max(page, 1), Math.Clamp(pageSize, 1, 100));
+        return Ok(await mediator.Send(query, ct));
     }
 
     [HttpPost]

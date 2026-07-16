@@ -11,7 +11,7 @@ public sealed class GetPurchaseOrderQueryHandler(IApplicationDbContext db)
 {
     public async Task<PurchaseOrderDetail> Handle(GetPurchaseOrderQuery request, CancellationToken ct)
     {
-        var order = await db.PurchaseOrders.FirstOrDefaultAsync(o => o.Id == request.OrderId, ct)
+        var order = await db.PurchaseOrders.AsNoTracking().FirstOrDefaultAsync(o => o.Id == request.OrderId, ct)
             ?? throw new ConflictException("La orden no existe.");
 
         return await PurchaseOrderDetailFactory.CreateAsync(db, order, ct);

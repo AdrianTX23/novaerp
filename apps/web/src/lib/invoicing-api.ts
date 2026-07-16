@@ -1,5 +1,5 @@
 import { apiClient } from "@/lib/api-client";
-import type { InvoiceDetail, InvoiceSummary } from "@/lib/types";
+import type { InvoiceDetail, InvoiceSummary, PagedResult } from "@/lib/types";
 
 export interface CreateInvoicePayload {
   salesOrderId: string;
@@ -17,19 +17,23 @@ export interface RegisterPaymentPayload {
 export interface InvoiceFilters {
   status?: string;
   customerId?: string;
+  page?: number;
+  pageSize?: number;
 }
 
 function buildQuery(filters: InvoiceFilters): string {
   const params = new URLSearchParams();
   if (filters.status) params.set("status", filters.status);
   if (filters.customerId) params.set("customerId", filters.customerId);
+  if (filters.page) params.set("page", String(filters.page));
+  if (filters.pageSize) params.set("pageSize", String(filters.pageSize));
   const qs = params.toString();
   return qs ? `?${qs}` : "";
 }
 
 export const invoicingApi = {
   list: (filters: InvoiceFilters = {}) =>
-    apiClient.get<InvoiceSummary[]>(`/api/invoices${buildQuery(filters)}`),
+    apiClient.get<PagedResult<InvoiceSummary>>(`/api/invoices${buildQuery(filters)}`),
   get: (invoiceId: string) => apiClient.get<InvoiceDetail>(`/api/invoices/${invoiceId}`),
   create: (payload: CreateInvoicePayload) => apiClient.post<InvoiceDetail>("/api/invoices", payload),
   registerPayment: (invoiceId: string, payload: RegisterPaymentPayload) =>

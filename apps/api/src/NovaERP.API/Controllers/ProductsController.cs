@@ -2,6 +2,7 @@ using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using NovaERP.API.Contracts;
+using NovaERP.Application.Common;
 using NovaERP.Application.Features.Catalog.AdjustStock;
 using NovaERP.Application.Features.Catalog.Common;
 using NovaERP.Application.Features.Catalog.CreateProduct;
@@ -19,10 +20,12 @@ public sealed class ProductsController(IMediator mediator) : ControllerBase
 {
     [HttpGet]
     [Authorize(Roles = Permissions.InventoryRead)]
-    public async Task<ActionResult<List<ProductSummary>>> List(
-        [FromQuery] string? search, [FromQuery] Guid? categoryId, [FromQuery] bool lowStockOnly, CancellationToken ct)
+    public async Task<ActionResult<PagedResult<ProductSummary>>> List(
+        [FromQuery] string? search, [FromQuery] Guid? categoryId, [FromQuery] bool lowStockOnly,
+        [FromQuery] int page = 1, [FromQuery] int pageSize = 50, CancellationToken ct = default)
     {
-        return Ok(await mediator.Send(new ListProductsQuery(search, categoryId, lowStockOnly), ct));
+        var query = new ListProductsQuery(search, categoryId, lowStockOnly, Math.Max(page, 1), Math.Clamp(pageSize, 1, 100));
+        return Ok(await mediator.Send(query, ct));
     }
 
     [HttpPost]

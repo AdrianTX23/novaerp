@@ -19,7 +19,7 @@ public sealed class ReportsHandlerTests
 
     private async Task<Guid> ConfirmedSaleAsync(NovaErpDbContext db, Guid customerId, Guid productId, decimal qty, DateOnly date)
     {
-        var order = await new CreateSalesOrderCommandHandler(db, new FakeTenantProvider(_tenantId)).Handle(
+        var order = await new CreateSalesOrderCommandHandler(db, new FakeTenantProvider(_tenantId), new FakeDocumentSequenceService()).Handle(
             new CreateSalesOrderCommand(customerId, date, null, [new CreateSalesOrderLineInput(productId, qty)]),
             CancellationToken.None);
         await new ConfirmSalesOrderCommandHandler(db).Handle(new ConfirmSalesOrderCommand(order.Id), CancellationToken.None);
@@ -40,7 +40,7 @@ public sealed class ReportsHandlerTests
         await ConfirmedSaleAsync(db, customer.Id, product.Id, 2, Today); // dentro del rango: 200
         await ConfirmedSaleAsync(db, customer.Id, product.Id, 1, Today.AddDays(-90)); // fuera del rango
 
-        var create = new CreateSalesOrderCommandHandler(db, new FakeTenantProvider(_tenantId));
+        var create = new CreateSalesOrderCommandHandler(db, new FakeTenantProvider(_tenantId), new FakeDocumentSequenceService());
         await create.Handle(new CreateSalesOrderCommand(customer.Id, Today, null,
             [new CreateSalesOrderLineInput(product.Id, 1)]), CancellationToken.None); // borrador, no confirmado
 

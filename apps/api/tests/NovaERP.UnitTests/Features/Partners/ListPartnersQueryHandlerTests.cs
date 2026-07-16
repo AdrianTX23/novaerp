@@ -21,6 +21,6 @@ public sealed class ListPartnersQueryHandlerTests
         var sut = new ListPartnersQueryHandler(db);
         var result = await sut.Handle(new ListPartnersQuery(PartnerType.Customer), CancellationToken.None);
 
-        result.Select(p => p.Name).Should().BeEquivalentTo(["Solo Cliente", "Ambos"]);
+        result.Items.Select(p => p.Name).Should().BeEquivalentTo(["Solo Cliente", "Ambos"]);
     }
 }

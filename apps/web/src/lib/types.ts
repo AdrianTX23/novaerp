@@ -1,3 +1,9 @@
+/** Respuesta paginada estándar del API (listados grandes). */
+export interface PagedResult<T> {
+  items: T[];
+  totalCount: number;
+}
+
 export interface AuthUser {
   id: string;
   tenantId: string;

@@ -11,7 +11,7 @@ public sealed class GetInvoiceQueryHandler(IApplicationDbContext db)
 {
     public async Task<InvoiceDetail> Handle(GetInvoiceQuery request, CancellationToken ct)
     {
-        var invoice = await db.Invoices.FirstOrDefaultAsync(i => i.Id == request.InvoiceId, ct)
+        var invoice = await db.Invoices.AsNoTracking().FirstOrDefaultAsync(i => i.Id == request.InvoiceId, ct)
             ?? throw new ConflictException("La factura no existe.");
 
         return InvoiceMapper.ToDetail(invoice);

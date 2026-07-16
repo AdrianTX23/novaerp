@@ -12,8 +12,8 @@ import {
 } from "@/components/ui/table";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
+import { TablePagination } from "@/components/ui/table-pagination";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { auditApi } from "@/lib/audit-api";
 import { AuditLogRow } from "@/components/audit/audit-log-row";
@@ -42,7 +42,6 @@ export function AuditLogTable() {
   });
 
   const data = query.data;
-  const totalPages = data ? Math.max(1, Math.ceil(data.totalCount / PAGE_SIZE)) : 1;
 
   return (
     <div className="grid gap-4">
@@ -120,29 +119,7 @@ export function AuditLogTable() {
             </TableBody>
           </Table>
 
-          <div className="flex items-center justify-between gap-4 border-t px-4 py-3">
-            <span className="text-muted-foreground text-xs">
-              {data.totalCount} registro{data.totalCount === 1 ? "" : "s"} · página {page} de {totalPages}
-            </span>
-            <div className="flex gap-2">
-              <Button
-                variant="outline"
-                size="sm"
-                disabled={page <= 1}
-                onClick={() => setPage((p) => Math.max(1, p - 1))}
-              >
-                Anterior
-              </Button>
-              <Button
-                variant="outline"
-                size="sm"
-                disabled={page >= totalPages}
-                onClick={() => setPage((p) => Math.min(totalPages, p + 1))}
-              >
-                Siguiente
-              </Button>
-            </div>
-          </div>
+          <TablePagination page={page} pageSize={PAGE_SIZE} totalCount={data.totalCount} onPageChange={setPage} />
         </div>
       )}
     </div>

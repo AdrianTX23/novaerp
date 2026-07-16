@@ -1,6 +1,7 @@
 "use client";
 
-import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import { useState } from "react";
+import { keepPreviousData, useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { toast } from "sonner";
 import {
   Table,
@@ -18,6 +19,7 @@ import { ApiError } from "@/lib/api-client";
 import type { SalesOrderStatus } from "@/lib/types";
 import { formatMoney } from "@/lib/utils";
 import { CreateSalesOrderDialog } from "@/components/sales/create-sales-order-dialog";
+import { TablePagination } from "@/components/ui/table-pagination";
 
 const STATUS_META: Record<SalesOrderStatus, { label: string; variant: "secondary" | "default" | "destructive" }> = {
   Draft: { label: "Borrador", variant: "secondary" },
@@ -25,11 +27,15 @@ const STATUS_META: Record<SalesOrderStatus, { label: string; variant: "secondary
   Cancelled: { label: "Cancelado", variant: "destructive" },
 };
 
+const PAGE_SIZE = 50;
+
 export function SalesOrdersTab() {
+  const [page, setPage] = useState(1);
   const queryClient = useQueryClient();
   const ordersQuery = useQuery({
-    queryKey: ["sales-orders"],
-    queryFn: () => salesApi.list(),
+    queryKey: ["sales-orders", page],
+    queryFn: () => salesApi.list({ page, pageSize: PAGE_SIZE }),
+    placeholderData: keepPreviousData,
   });
 
   const invalidate = () => {
@@ -67,7 +73,7 @@ export function SalesOrdersTab() {
   return (
     <div className="grid gap-4">
       <div className="flex items-center justify-between">
-        <p className="text-muted-foreground text-sm">{ordersQuery.data?.length ?? 0} pedidos.</p>
+        <p className="text-muted-foreground text-sm">{ordersQuery.data?.totalCount ?? 0} pedidos.</p>
         <CreateSalesOrderDialog />
       </div>
 
@@ -86,7 +92,7 @@ export function SalesOrdersTab() {
             </TableRow>
           </TableHeader>
           <TableBody>
-            {ordersQuery.data?.map((order) => {
+            {ordersQuery.data?.items.map((order) => {
               const meta = STATUS_META[order.status];
               return (
                 <TableRow key={order.id}>
@@ -128,7 +134,7 @@ export function SalesOrdersTab() {
                 </TableRow>
               );
             })}
-            {ordersQuery.data?.length === 0 && (
+            {ordersQuery.data?.items.length === 0 && (
               <TableRow>
                 <TableCell colSpan={6} className="text-muted-foreground text-center">
                   Todavía no hay pedidos de venta.
@@ -137,6 +143,15 @@ export function SalesOrdersTab() {
             )}
           </TableBody>
         </Table>
+      )}
+
+      {ordersQuery.data && (
+        <TablePagination
+          page={page}
+          pageSize={PAGE_SIZE}
+          totalCount={ordersQuery.data.totalCount}
+          onPageChange={setPage}
+        />
       )}
     </div>
   );

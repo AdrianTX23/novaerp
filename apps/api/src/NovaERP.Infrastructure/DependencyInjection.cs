@@ -51,6 +51,7 @@ public static class DependencyInjection
         });
 
         services.AddScoped<IApplicationDbContext>(sp => sp.GetRequiredService<NovaErpDbContext>());
+        services.AddScoped<IDocumentSequenceService, DocumentSequenceService>();
 
         var redisConnectionString = configuration.GetConnectionString("Redis");
         if (!string.IsNullOrWhiteSpace(redisConnectionString))

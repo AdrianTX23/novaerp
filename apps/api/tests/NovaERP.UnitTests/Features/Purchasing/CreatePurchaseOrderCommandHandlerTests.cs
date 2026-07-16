@@ -17,7 +17,7 @@ public sealed class CreatePurchaseOrderCommandHandlerTests
         using var db = TestDbContextFactory.Create(_tenantId);
         var (supplier, product) = await PurchasingTestData.SeedAsync(db, _tenantId, initialStock: 0, costPrice: 5m);
 
-        var sut = new CreatePurchaseOrderCommandHandler(db, new FakeTenantProvider(_tenantId));
+        var sut = new CreatePurchaseOrderCommandHandler(db, new FakeTenantProvider(_tenantId), new FakeDocumentSequenceService());
         var result = await sut.Handle(
             new CreatePurchaseOrderCommand(supplier.Id, new DateOnly(2026, 7, 13), null,
                 [new CreatePurchaseOrderLineInput(product.Id, 100)]),
@@ -42,7 +42,7 @@ public sealed class CreatePurchaseOrderCommandHandlerTests
         db.Partners.Add(customer);
         await db.SaveChangesAsync(CancellationToken.None);
 
-        var sut = new CreatePurchaseOrderCommandHandler(db, new FakeTenantProvider(_tenantId));
+        var sut = new CreatePurchaseOrderCommandHandler(db, new FakeTenantProvider(_tenantId), new FakeDocumentSequenceService());
         var act = () => sut.Handle(
             new CreatePurchaseOrderCommand(customer.Id, new DateOnly(2026, 7, 13), null,
                 [new CreatePurchaseOrderLineInput(product.Id, 1)]),

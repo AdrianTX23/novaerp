@@ -2,6 +2,7 @@ using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using NovaERP.API.Contracts;
+using NovaERP.Application.Common;
 using NovaERP.Application.Features.Invoicing.Common;
 using NovaERP.Application.Features.Invoicing.CreateInvoice;
 using NovaERP.Application.Features.Invoicing.GetInvoice;
@@ -19,10 +20,12 @@ public sealed class InvoicesController(IMediator mediator) : ControllerBase
 {
     [HttpGet]
     [Authorize(Roles = Permissions.InvoicesRead)]
-    public async Task<ActionResult<List<InvoiceSummary>>> List(
-        [FromQuery] string? status, [FromQuery] Guid? customerId, CancellationToken ct)
+    public async Task<ActionResult<PagedResult<InvoiceSummary>>> List(
+        [FromQuery] string? status, [FromQuery] Guid? customerId,
+        [FromQuery] int page = 1, [FromQuery] int pageSize = 50, CancellationToken ct = default)
     {
-        return Ok(await mediator.Send(new ListInvoicesQuery(status, customerId), ct));
+        var query = new ListInvoicesQuery(status, customerId, Math.Max(page, 1), Math.Clamp(pageSize, 1, 100));
+        return Ok(await mediator.Send(query, ct));
     }
 
     [HttpGet("{invoiceId:guid}")]

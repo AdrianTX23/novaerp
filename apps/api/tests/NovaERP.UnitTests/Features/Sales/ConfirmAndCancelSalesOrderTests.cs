@@ -15,7 +15,7 @@ public sealed class ConfirmAndCancelSalesOrderTests
     private async Task<Guid> CreateDraftAsync(NovaERP.Infrastructure.Persistence.NovaErpDbContext db,
         Guid customerId, Guid productId, decimal quantity)
     {
-        var create = new CreateSalesOrderCommandHandler(db, new FakeTenantProvider(_tenantId));
+        var create = new CreateSalesOrderCommandHandler(db, new FakeTenantProvider(_tenantId), new FakeDocumentSequenceService());
         var order = await create.Handle(
             new CreateSalesOrderCommand(customerId, new DateOnly(2026, 7, 13), null,
                 [new CreateSalesOrderLineInput(productId, quantity)]),

@@ -28,7 +28,7 @@ public sealed class InvoicingHandlerTests
         db.Products.Add(product);
         await db.SaveChangesAsync(CancellationToken.None);
 
-        var order = await new CreateSalesOrderCommandHandler(db, new FakeTenantProvider(_tenantId)).Handle(
+        var order = await new CreateSalesOrderCommandHandler(db, new FakeTenantProvider(_tenantId), new FakeDocumentSequenceService()).Handle(
             new CreateSalesOrderCommand(customer.Id, Today, null, [new CreateSalesOrderLineInput(product.Id, qty)]),
             CancellationToken.None);
         await new ConfirmSalesOrderCommandHandler(db).Handle(new ConfirmSalesOrderCommand(order.Id), CancellationToken.None);
@@ -41,7 +41,7 @@ public sealed class InvoicingHandlerTests
         using var db = TestDbContextFactory.Create(_tenantId);
         var orderId = await ConfirmedOrderAsync(db, qty: 3, salePrice: 900);
 
-        var result = await new CreateInvoiceCommandHandler(db, new FakeTenantProvider(_tenantId))
+        var result = await new CreateInvoiceCommandHandler(db, new FakeTenantProvider(_tenantId), new FakeDocumentSequenceService())
             .Handle(new CreateInvoiceCommand(orderId, null, null), CancellationToken.None);
 
         result.InvoiceNumber.Should().Be("INV-00001");
@@ -56,7 +56,7 @@ public sealed class InvoicingHandlerTests
     {
         using var db = TestDbContextFactory.Create(_tenantId);
         var orderId = await ConfirmedOrderAsync(db, 1, 100);
-        var sut = new CreateInvoiceCommandHandler(db, new FakeTenantProvider(_tenantId));
+        var sut = new CreateInvoiceCommandHandler(db, new FakeTenantProvider(_tenantId), new FakeDocumentSequenceService());
         await sut.Handle(new CreateInvoiceCommand(orderId, null, null), CancellationToken.None);
 
         var act = () => sut.Handle(new CreateInvoiceCommand(orderId, null, null), CancellationToken.None);
@@ -69,7 +69,7 @@ public sealed class InvoicingHandlerTests
     {
         using var db = TestDbContextFactory.Create(_tenantId);
         var orderId = await ConfirmedOrderAsync(db, 1, 1000);
-        var invoice = await new CreateInvoiceCommandHandler(db, new FakeTenantProvider(_tenantId))
+        var invoice = await new CreateInvoiceCommandHandler(db, new FakeTenantProvider(_tenantId), new FakeDocumentSequenceService())
             .Handle(new CreateInvoiceCommand(orderId, null, null), CancellationToken.None);
 
         var afterPartial = await new RegisterPaymentCommandHandler(db).Handle(
@@ -88,7 +88,7 @@ public sealed class InvoicingHandlerTests
     {
         using var db = TestDbContextFactory.Create(_tenantId);
         var orderId = await ConfirmedOrderAsync(db, 1, 1000);
-        var invoice = await new CreateInvoiceCommandHandler(db, new FakeTenantProvider(_tenantId))
+        var invoice = await new CreateInvoiceCommandHandler(db, new FakeTenantProvider(_tenantId), new FakeDocumentSequenceService())
             .Handle(new CreateInvoiceCommand(orderId, null, null), CancellationToken.None);
         await new RegisterPaymentCommandHandler(db).Handle(
             new RegisterPaymentCommand(invoice.Id, 100, Today, PaymentMethod.Cash, null), CancellationToken.None);
