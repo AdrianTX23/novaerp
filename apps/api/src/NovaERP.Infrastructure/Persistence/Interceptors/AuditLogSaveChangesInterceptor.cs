@@ -20,9 +20,7 @@ namespace NovaERP.Infrastructure.Persistence.Interceptors;
 /// Solo las entidades de línea (SalesOrderLine, InvoiceLine, etc.) quedan
 /// fuera porque no implementan ITenantEntity — evita ruido a nivel de detalle.
 /// </summary>
-public sealed class AuditLogSaveChangesInterceptor(
-    ITenantProvider tenantProvider,
-    ICurrentUserService currentUser) : SaveChangesInterceptor
+public sealed class AuditLogSaveChangesInterceptor(ICurrentUserService currentUser) : SaveChangesInterceptor
 {
     // Entidades técnicas: no son datos de negocio (RefreshToken) o auditarse a
     // sí misma causaría recursión (AuditLog).
@@ -69,7 +67,6 @@ public sealed class AuditLogSaveChangesInterceptor(
             return;
         }
 
-        var tenantId = tenantProvider.TenantId;
         var now = DateTimeOffset.UtcNow;
 
         // Snapshot: agregar filas de AuditLog mientras se recorre el
@@ -111,7 +108,16 @@ public sealed class AuditLogSaveChangesInterceptor(
             var entityId = ((BaseEntity)entry.Entity).Id;
             var entityName = entry.Entity.GetType().Name;
 
-            context.Add(new AuditLog(tenantId, entityName, entityId, action, currentUser.UserId, currentUser.Email, changes, now));
+            // Tenant no es ITenantEntity: su propio Id ES el límite de tenant.
+            // Para el resto, usar el TenantId ya asignado en la propia entidad
+            // (no el del provider ambiental): en Register no hay JWT todavía
+            // — tenantProvider.TenantId sería Guid.Empty y dejaría huérfanas
+            // las filas de auditoría del alta de la empresa (tenant, roles,
+            // usuario dueño, plan de cuentas), invisibles para siempre detrás
+            // del filtro global de tenant.
+            var entityTenantId = entry.Entity is Tenant tenant ? tenant.Id : ((ITenantEntity)entry.Entity).TenantId;
+
+            context.Add(new AuditLog(entityTenantId, entityName, entityId, action, currentUser.UserId, currentUser.Email, changes, now));
         }
     }
 

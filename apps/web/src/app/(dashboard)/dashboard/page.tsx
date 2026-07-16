@@ -8,6 +8,7 @@ import { ApiError } from "@/lib/api-client";
 import { Skeleton } from "@/components/ui/skeleton";
 import { KpiCard } from "@/components/dashboard/kpi-card";
 import { SalesTrendChart } from "@/components/dashboard/sales-trend-chart";
+import { Forbidden } from "@/components/layout/forbidden";
 import { formatMoney } from "@/lib/utils";
 
 export default function DashboardPage() {
@@ -30,9 +31,7 @@ export default function DashboardPage() {
       </div>
 
       {forbidden ? (
-        <div className="text-muted-foreground rounded-xl border border-dashed p-8 text-center text-sm">
-          Tu rol no tiene acceso a los indicadores del negocio.
-        </div>
+        <Forbidden message="Tu rol no tiene acceso a los indicadores del negocio." />
       ) : isLoading ? (
         <DashboardSkeleton />
       ) : data ? (

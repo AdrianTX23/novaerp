@@ -19,9 +19,11 @@ public sealed class LoginCommandHandler(
         var user = await db.Users.IgnoreQueryFilters()
             .FirstOrDefaultAsync(u => u.Email == email, ct);
 
-        // Verificamos el hash incluso si el usuario no existe no es necesario aquí:
-        // el mensaje es genérico para no revelar si el email está registrado.
-        if (user is null || !user.IsActive || !passwordHasher.Verify(request.Password, user.PasswordHash))
+        // Verify() se llama siempre, exista o no el usuario (con hash: null
+        // internamente compara contra un hash dummy) — así el tiempo de
+        // respuesta no delata si un email está registrado.
+        var passwordValid = passwordHasher.Verify(request.Password, user?.PasswordHash);
+        if (user is null || !user.IsActive || !passwordValid)
         {
             throw new UnauthorizedException("Email o contraseña incorrectos.");
         }

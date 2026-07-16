@@ -1,6 +1,8 @@
 using System.Text;
+using System.Threading.RateLimiting;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.HttpOverrides;
+using Microsoft.AspNetCore.RateLimiting;
 using Microsoft.IdentityModel.Tokens;
 using NovaERP.API.Middleware;
 using NovaERP.Application;
@@ -57,6 +59,24 @@ builder.Services.AddCors(options =>
 
 builder.Services.AddHealthChecks();
 
+// Sin esto, /auth/login y /auth/register no tienen ninguna fricción contra
+// fuerza bruta de contraseñas o alta masiva de tenants — 10 intentos por
+// minuto por IP es suficiente para un usuario real (típico: 1-2 intentos) y
+// corta en seco un ataque automatizado. Particionado por IP (no un límite
+// global) para que un atacante no pueda bloquear a los demás usuarios.
+builder.Services.AddRateLimiter(options =>
+{
+    options.RejectionStatusCode = StatusCodes.Status429TooManyRequests;
+    options.AddPolicy("auth", httpContext => RateLimitPartition.GetFixedWindowLimiter(
+        partitionKey: httpContext.Connection.RemoteIpAddress?.ToString() ?? "unknown",
+        factory: _ => new FixedWindowRateLimiterOptions
+        {
+            PermitLimit = 10,
+            Window = TimeSpan.FromMinutes(1),
+            QueueLimit = 0,
+        }));
+});
+
 var app = builder.Build();
 
 app.UseMiddleware<ExceptionHandlingMiddleware>();
@@ -80,8 +100,26 @@ forwardedHeadersOptions.KnownProxies.Clear();
 forwardedHeadersOptions.KnownNetworks.Clear();
 app.UseForwardedHeaders(forwardedHeadersOptions);
 
+if (!app.Environment.IsDevelopment())
+{
+    app.UseHsts();
+}
+
 app.UseHttpsRedirection();
+
+// nosniff: la API nunca sirve contenido para renderizar en un <iframe> ni
+// depende de que el navegador adivine un content-type — sin esto, un
+// endpoint que devuelva texto controlado por el usuario (ej. un nombre de
+// producto) podría ser interpretado como HTML/script por navegadores viejos.
+app.Use(async (context, next) =>
+{
+    context.Response.Headers.Append("X-Content-Type-Options", "nosniff");
+    context.Response.Headers.Append("Referrer-Policy", "strict-origin-when-cross-origin");
+    await next();
+});
+
 app.UseCors("Default");
+app.UseRateLimiter();
 
 app.UseAuthentication();
 app.UseMiddleware<TenantResolutionMiddleware>();

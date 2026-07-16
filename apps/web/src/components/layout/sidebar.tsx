@@ -25,27 +25,28 @@ import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from "@/co
 import { useAuthStore } from "@/stores/auth-store";
 
 const NAV_ITEMS = [
-  { href: "/dashboard", label: "Dashboard", icon: LayoutDashboard },
-  { href: "/dashboard/inventario", label: "Inventario", icon: Package },
-  { href: "/dashboard/contactos", label: "Contactos", icon: Contact },
-  { href: "/dashboard/crm", label: "CRM", icon: Target },
-  { href: "/dashboard/ventas", label: "Ventas", icon: ShoppingCart },
-  { href: "/dashboard/facturacion", label: "Facturación", icon: Receipt },
-  { href: "/dashboard/caja", label: "Caja", icon: Wallet },
-  { href: "/dashboard/contabilidad", label: "Contabilidad", icon: BookOpen },
-  { href: "/dashboard/compras", label: "Compras", icon: ShoppingBag },
-  { href: "/dashboard/usuarios", label: "Usuarios", icon: Users },
-  { href: "/dashboard/reportes", label: "Reportes", icon: FileBarChart },
+  { href: "/dashboard", label: "Dashboard", icon: LayoutDashboard, permission: null },
+  { href: "/dashboard/inventario", label: "Inventario", icon: Package, permission: null },
+  { href: "/dashboard/contactos", label: "Contactos", icon: Contact, permission: null },
+  { href: "/dashboard/crm", label: "CRM", icon: Target, permission: null },
+  { href: "/dashboard/ventas", label: "Ventas", icon: ShoppingCart, permission: null },
+  { href: "/dashboard/facturacion", label: "Facturación", icon: Receipt, permission: null },
+  { href: "/dashboard/caja", label: "Caja", icon: Wallet, permission: null },
+  { href: "/dashboard/contabilidad", label: "Contabilidad", icon: BookOpen, permission: null },
+  { href: "/dashboard/compras", label: "Compras", icon: ShoppingBag, permission: null },
+  { href: "/dashboard/usuarios", label: "Usuarios", icon: Users, permission: "users.read" },
+  { href: "/dashboard/reportes", label: "Reportes", icon: FileBarChart, permission: "reports.read" },
 ] as const;
 
 function NavLinks({ onNavigate }: { onNavigate?: () => void }) {
   const pathname = usePathname();
-  const canManage = useAuthStore((s) => s.user?.permissions.includes("users.manage") ?? false);
+  const permissions = useAuthStore((s) => s.user?.permissions ?? []);
+  const canManage = permissions.includes("users.manage");
 
   return (
     <>
       <nav className="mt-4 flex flex-1 flex-col gap-0.5">
-        {NAV_ITEMS.map((item) => {
+        {NAV_ITEMS.filter((item) => !item.permission || permissions.includes(item.permission)).map((item) => {
           const isActive =
             item.href === "/dashboard" ? pathname === item.href : pathname.startsWith(item.href);
 

@@ -30,7 +30,11 @@ public static class DependencyInjection
             .Validate(o => !string.IsNullOrWhiteSpace(o.SigningKey), "Jwt:SigningKey es obligatorio.")
             .ValidateOnStart();
 
-        services.AddScoped<IPasswordHasher, PasswordHasher>();
+        // Singleton (no Scoped): sin estado propio salvo el hash dummy cacheado
+        // para el timing-guard de Login — si fuera Scoped, ese hash se
+        // recalcularía en cada request sin usuario encontrado, reintroduciendo
+        // el mismo tipo de diferencia de tiempo medible que el guard evita.
+        services.AddSingleton<IPasswordHasher, PasswordHasher>();
         services.AddScoped<ITokenService, TokenService>();
 
         var connectionString = configuration.GetConnectionString("Postgres")

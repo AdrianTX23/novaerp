@@ -1,6 +1,7 @@
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.RateLimiting;
 using NovaERP.API.Contracts;
 using NovaERP.Application.Features.Authentication.Common;
 using NovaERP.Application.Features.Authentication.Login;
@@ -19,6 +20,7 @@ public sealed class AuthController(IMediator mediator) : ControllerBase
 
     [HttpPost("register")]
     [AllowAnonymous]
+    [EnableRateLimiting("auth")]
     public async Task<ActionResult<AuthResponse>> Register(RegisterRequest request, CancellationToken ct)
     {
         var result = await mediator.Send(
@@ -28,6 +30,7 @@ public sealed class AuthController(IMediator mediator) : ControllerBase
 
     [HttpPost("login")]
     [AllowAnonymous]
+    [EnableRateLimiting("auth")]
     public async Task<ActionResult<AuthResponse>> Login(LoginRequest request, CancellationToken ct)
     {
         var result = await mediator.Send(new LoginCommand(request.Email, request.Password), ct);
@@ -36,6 +39,7 @@ public sealed class AuthController(IMediator mediator) : ControllerBase
 
     [HttpPost("refresh")]
     [AllowAnonymous]
+    [EnableRateLimiting("auth")]
     public async Task<ActionResult<AuthResponse>> Refresh(CancellationToken ct)
     {
         var refreshToken = Request.Cookies[RefreshCookieName];
